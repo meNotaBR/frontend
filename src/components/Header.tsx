@@ -8,11 +8,14 @@ import { Label } from './ui/label'
 import { Input } from './ui/input'
 import DatePicker from './DatePicker'
 import { ModeToggle } from './ModeToggle'
+import { useTheme } from 'next-themes'
 
 
 type Props = {}
 
 const Header = (props: Props) => {
+
+    const theme = useTheme();
 
     const [dateInicio, setDateInicio] = useState<Date>();
     const [dateEntrega, setDateEntrega] = useState<Date>();
@@ -23,7 +26,7 @@ const Header = (props: Props) => {
                 <Sheet>
                     <SheetTrigger asChild>
                         <Button variant="ghost" size="icon" className="text-white">
-                            <Menu style={{ height: '30px', width: '30px' }} />
+                            <Menu color={theme.theme === 'dark' ? 'white' : 'black'} style={{ height: '30px', width: '30px' }} />
                             <span className="sr-only">Menu</span>
                         </Button>
                     </SheetTrigger>
@@ -57,7 +60,7 @@ const Header = (props: Props) => {
                 <Sheet>
                     <SheetTrigger asChild>
                         <Button variant="ghost" size="icon" className="text-white hover:bg-black/20">
-                            <Plus style={{ height: '30px', width: '30px' }} />
+                            <Plus color={theme.theme === 'dark' ? 'white' : 'black'} style={{ height: '30px', width: '30px' }} />
                             <span className="sr-only">Add new</span>
                         </Button>
                     </SheetTrigger>
