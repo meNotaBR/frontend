@@ -21,12 +21,12 @@ const Header = (props: Props) => {
     const [dateEntrega, setDateEntrega] = useState<Date>();
 
     return (
-        <header className="flex items-center justify-between px-4 py-3 relative">
+        <header className="flex items-center justify-between px-4 py-3 relative" >
             <div className="flex items-center">
                 <Sheet>
                     <SheetTrigger asChild>
                         <Button variant="ghost" size="icon" className="text-white">
-                            <Menu color={theme.theme === 'dark' ? 'white' : 'black'} style={{ height: '30px', width: '30px' }} />
+                            <Menu color={theme.theme === 'light' ? 'black' : 'white'} style={{ height: '30px', width: '30px' }} />
                             <span className="sr-only">Menu</span>
                         </Button>
                     </SheetTrigger>
@@ -60,7 +60,7 @@ const Header = (props: Props) => {
                 <Sheet>
                     <SheetTrigger asChild>
                         <Button variant="ghost" size="icon" className="text-white hover:bg-black/20">
-                            <Plus color={theme.theme === 'dark' ? 'white' : 'black'} style={{ height: '30px', width: '30px' }} />
+                            <Plus color={theme.theme === 'light' ? 'black' : 'white'} style={{ height: '30px', width: '30px' }} />
                             <span className="sr-only">Add new</span>
                         </Button>
                     </SheetTrigger>
