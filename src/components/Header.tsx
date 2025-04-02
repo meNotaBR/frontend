@@ -9,6 +9,7 @@ import { Input } from './ui/input'
 import DatePicker from './DatePicker'
 import { ModeToggle } from './ModeToggle'
 import { useTheme } from 'next-themes'
+import SonnerToast from './SonnerToast'
 
 
 type Props = {}
@@ -80,7 +81,7 @@ const Header = (props: Props) => {
 
                         <SheetFooter>
                             <SheetClose asChild>
-                                <Button type="submit">Save changes</Button>
+                                <SonnerToast actionTitle='Desfazer' title='Projeto criado com sucesso' description='Data de Inicio: 02/04/2025' variant='default' onClick={() => { console.log("a") }}></SonnerToast>
                             </SheetClose>
                         </SheetFooter>
                     </SheetContent>
