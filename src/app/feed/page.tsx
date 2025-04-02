@@ -23,7 +23,7 @@ const page = (props: Props) => {
     return (<>
         <Header />
 
-        <ProjectsCarousel label='Projetos que mais subiram essa semana' projetos={projetos} />
+        <ProjectsCarousel label='Projetos mais votados da semana' projetos={projetos} />
 
         <Label className='mb-4 text-3xl'>Feed</Label>
         <div className='w-full'>
