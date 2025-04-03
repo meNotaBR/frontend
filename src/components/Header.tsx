@@ -10,8 +10,6 @@ import DatePicker from './DatePicker'
 import { ModeToggle } from './ModeToggle'
 import { useTheme } from 'next-themes'
 import SonnerToast from './SonnerToast'
-import { headers } from 'next/headers'
-import { isMobile } from '@/hooks/user-agent'
 import Link from 'next/link'
 
 
