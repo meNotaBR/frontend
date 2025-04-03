@@ -20,11 +20,7 @@ const MobileFooter = (props: Props) => {
                     <Bell className="h-6 w-6" />
                     <span className="sr-only">Notifications</span>
                 </Link>
-                <Link href="/messages" className="flex items-center justify-center text-gray-400 hover:text-gray-300">
-                    <Mail className="h-6 w-6" />
-                    <span className="sr-only">Messages</span>
-                </Link>
-                <Link href="/bookmarks" className="flex items-center justify-center text-gray-400 hover:text-gray-300">
+                <Link href="/liked" className="flex items-center justify-center text-gray-400 hover:text-gray-300">
                     <Star className="h-6 w-6" />
                     <span className="sr-only">Bookmarks</span>
                 </Link>
