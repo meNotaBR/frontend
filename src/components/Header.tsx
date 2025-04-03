@@ -1,8 +1,8 @@
-"use client"
+'use client'
 
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Button } from './ui/button'
-import { Menu, Plus } from 'lucide-react'
+import { FolderOpenDot, Menu, Plus, Search, Star } from 'lucide-react'
 import { Sheet, SheetClose, SheetContent, SheetDescription, SheetFooter, SheetHeader, SheetTitle, SheetTrigger } from './ui/sheet'
 import { Label } from './ui/label'
 import { Input } from './ui/input'
@@ -10,6 +10,9 @@ import DatePicker from './DatePicker'
 import { ModeToggle } from './ModeToggle'
 import { useTheme } from 'next-themes'
 import SonnerToast from './SonnerToast'
+import { headers } from 'next/headers'
+import { isMobile } from '@/hooks/user-agent'
+import Link from 'next/link'
 
 
 type Props = {}
@@ -20,6 +23,21 @@ const Header = (props: Props) => {
 
     const [dateInicio, setDateInicio] = useState<Date>();
     const [dateEntrega, setDateEntrega] = useState<Date>();
+
+    const [width, setWidth] = useState<number>(window.innerWidth);
+
+    function handleWindowSizeChange() {
+        setWidth(window.innerWidth);
+    }
+
+    useEffect(() => {
+        window.addEventListener('resize', handleWindowSizeChange);
+        return () => {
+            window.removeEventListener('resize', handleWindowSizeChange);
+        }
+    }, []);
+
+    const isMobile = width <= 768;
 
     return (
         <header className="flex items-center justify-between px-4 py-3 relative" >
@@ -40,8 +58,17 @@ const Header = (props: Props) => {
                         </SheetHeader>
 
                         <Button variant='outline'>
-                            Meus projetos
+                            <Link href='projetos' className='flex justify-between gap-2' ><FolderOpenDot className='mt-[2px]'/>Meus projetos</Link>
                         </Button>
+
+                        {!isMobile ? (<div className='grid grid-cols-1 gap-4'>
+                            <Button variant={'outline'} >
+                                <Link href='/search' className='flex justify-between gap-2'><Search className='mt-[2px]'/>Pesquisar Projetos</Link>
+                            </Button>
+                            <Button variant='outline'>
+                                <Link href='/liked' className='flex justify-between gap-2'><Star className='mt-[2px]'/> Projetos que você curtiu</Link>
+                            </Button>
+                        </div>) : ("")}
 
                         <SheetFooter>
                             <SheetClose asChild>
@@ -51,7 +78,7 @@ const Header = (props: Props) => {
                     </SheetContent>
                 </Sheet>
 
-                <img src="menota.svg" alt="" className='w-[150px]' />
+                <Link href='/feed'><img src="menota.svg" alt="" className='w-[150px] not-dark:invert not-dark:brightness-200' /></Link>
             </div>
 
             <div className="flex items-center">
