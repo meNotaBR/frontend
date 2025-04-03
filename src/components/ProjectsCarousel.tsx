@@ -11,7 +11,7 @@ type Props = {
 const ProjectsCarousel = (props: Props) => {
   return (
     <div className='mb-8'>
-    <Label className='lg:text-3xl sm:text-2xl mb-4 justify-center sm:justify-self-start'>{props.label}</Label>
+    <Label className='lg:text-3xl sm:text-2xl mb-4 lg:justify-center sm:justify-self-start'>{props.label}</Label>
     <Carousel className="w-full">
         <CarouselContent className=''>
             {props.projetos.map((element, index) => (
