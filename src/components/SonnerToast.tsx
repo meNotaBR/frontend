@@ -16,6 +16,7 @@ type Props = {
 const SonnerToast = forwardRef<HTMLButtonElement, Props>((props, ref) => {
   return (
     <Button
+      type="submit"
       ref={ref}
       variant={props.variant}
       className={props.className}
