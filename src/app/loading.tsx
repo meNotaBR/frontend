@@ -53,7 +53,7 @@ export default function TypingLogoAnimation() {
   }, [text, isTyping, isPaused, fullText])
 
   return (
-    <div className="flex items-center justify-center w-full h-screen bg-black">
+    <div className="flex items-center justify-center w-full h-screen">
       <svg width="600" height="200" viewBox="0 0 600 200">
         <defs>
           <style>
@@ -77,10 +77,10 @@ export default function TypingLogoAnimation() {
         </defs>
         <text x="50%" y="50%" textAnchor="middle" dominantBaseline="middle">
           <motion.tspan className="logo-text" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
-            {text.substring(0, 2).length > 0 ? <tspan className="logo-text me">{text.substring(0, 2)}</tspan> : null}
-            {text.substring(2).length > 0 ? <tspan className="logo-text nota">{text.substring(2)}</tspan> : null}
+            {text.substring(0, 2).length > 0 ? <tspan className="logo-text me not-dark:invert not-dark:brightness-200">{text.substring(0, 2)}</tspan> : null}
+            {text.substring(2).length > 0 ? <tspan className="logo-text nota not-dark:invert not-dark:brightness-200">{text.substring(2)}</tspan> : null}
             <tspan
-          className={`absolute top-1/2 left-1/2 transform -translate-y-1/2 ${showCursor ? "opacity-100" : "opacity-0"}`}
+          className={`absolute not-dark:fill-black top-1/2 left-1/2 transform -translate-y-1/2 ${showCursor ? "opacity-100" : "opacity-0"}`}
           style={{
             marginLeft: `${text.length * 30}px`, // Adjust based on your font size
             color: "white",
