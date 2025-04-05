@@ -8,7 +8,6 @@ import { Badge } from './ui/badge'
 import { Button } from './ui/button'
 import { ArrowUpFromLine, CalendarDays, Check, Share2 } from 'lucide-react'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from './ui/tooltip'
-import { Separator } from './ui/separator'
 import { HoverCard, HoverCardContent, HoverCardTrigger } from './ui/hover-card'
 
 type Props = {
