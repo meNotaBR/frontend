@@ -71,18 +71,18 @@ const MobileFooter = (props: Props) => {
         <footer className="fixed bottom-0 left-0 right-0 bg-black w-full py-3 px-4">
             <div className="flex justify-between items-center max-w-md mx-auto">
                 <Link href="/feed" className="flex items-center justify-center text-blue-500">
-                    <Home className="h-5 w-5" />
+                    <Home className="h-5 w-5" color='white'/>
                     <span className="sr-only">Home</span>
                 </Link>
                 <Link href="/search" className="flex items-center justify-center text-gray-400 hover:text-gray-300">
-                    <Search className="h-5 w-5" />
+                    <Search className="h-5 w-5" color='white' />
                     <span className="sr-only">Search</span>
                 </Link>
 
                 <Drawer>
                     <DrawerTrigger asChild>
                         <Button variant="ghost" size="icon" className="relative">
-                            <Bell className="h-5 w-5" />
+                            <Bell color='white' className="h-5 w-5" />
                             {unreadCount > 0 && (
                                 <span className="absolute -right-1 -top-1 flex h-5 w-5 items-center justify-center rounded-full bg-red-500 text-xs text-white">
                                     {unreadCount}
@@ -154,7 +154,7 @@ const MobileFooter = (props: Props) => {
                     </DrawerContent>
                 </Drawer>
                 <Link href="/liked" className="flex items-center justify-center text-gray-400 hover:text-gray-300">
-                    <Star className="h-5 w-5" />
+                    <Star color='white' className="h-5 w-5" />
                     <span className="sr-only">Bookmarks</span>
                 </Link>
             </div>
