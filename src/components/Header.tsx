@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from 'react'
 import { Button } from './ui/button'
-import { Bell, Check, ExternalLink, FolderOpenDot, Menu, Plus, Search, Star, X } from 'lucide-react'
+import { Bell, Check, ExternalLink, FolderOpenDot, Menu, Newspaper, Plus, Search, Star, X } from 'lucide-react'
 import { Sheet, SheetClose, SheetContent, SheetDescription, SheetFooter, SheetHeader, SheetTitle, SheetTrigger } from './ui/sheet'
 import { Label } from './ui/label'
 import { Input } from './ui/input'
@@ -110,15 +110,19 @@ const Header = (props: Props) => {
                             </SheetDescription>
                         </SheetHeader>
 
-                        <Button variant='outline'>
+                        <Button variant='outline' asChild >
+                                <Link href='/feed' className='flex justify-between gap-2'><Newspaper />Voltar ao início</Link>
+                        </Button>
+
+                        <Button variant='outline' asChild>
                             <Link href='/projetos'className='flex justify-between gap-2' ><FolderOpenDot className='mt-[2px]' /> Meus projetos</Link>
                         </Button>
 
                         {!agent ? (<div className='grid grid-cols-1 gap-4'>
-                            <Button variant={'outline'} >
+                            <Button variant={'outline'} asChild>
                                 <Link href='/search' className='flex justify-between gap-2'><Search className='mt-[2px]'/>Pesquisar Projetos</Link>
                             </Button>
-                            <Button variant='outline'>
+                            <Button variant='outline' asChild>
                                 <Link href='/liked' className='flex justify-between gap-2'><Star className='mt-[2px]'/> Projetos que você curtiu</Link>
                             </Button>
                         </div>) : ("")}
