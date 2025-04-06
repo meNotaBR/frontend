@@ -82,7 +82,7 @@ export default function TypingLogoAnimation() {
             <tspan
           className={`absolute not-dark:fill-black top-1/2 left-1/2 transform -translate-y-1/2 ${showCursor ? "opacity-100" : "opacity-0"}`}
           style={{
-            marginLeft: `${text.length * 30}px`, // Adjust based on your font size
+            marginLeft: `${text.length * 30}px`,
             color: "white",
             fontSize: "120px",
             fontFamily: "serif",
@@ -90,7 +90,7 @@ export default function TypingLogoAnimation() {
             transition: "opacity 0.3s",
           }}
         >
-          _
+          |
         </tspan>
           </motion.tspan>
         </text>
