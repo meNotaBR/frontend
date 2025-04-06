@@ -9,6 +9,7 @@ import { Button } from './ui/button'
 import { ArrowUpFromLine, CalendarDays, Check, Share2 } from 'lucide-react'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from './ui/tooltip'
 import { HoverCard, HoverCardContent, HoverCardTrigger } from './ui/hover-card'
+import Link from 'next/link'
 
 type Props = {
     projeto: Projeto
@@ -114,7 +115,7 @@ const ProjectCard = (props: Props) => {
                     <Label style={{ marginBottom: '4px' }} className='text-2xl xs:text-[20px]'>{props.projeto.nome}</Label>
                     <Label className='mt-3'>{checkDescriptionSize(props.projeto.descricao)}</Label>
                 </CardContent>
-                <CardFooter className='flex justify-between sm:mt-4'>
+                <CardFooter className='flex justify-around sm:mt-4'>
 
                     {liked ? (
                         <Button variant='secondary' className='rounded-2xl dark:bg-[#892be2] not-dark:bg-[#FF00FF]' onClick={() => unlikeProject()}>
@@ -126,8 +127,8 @@ const ProjectCard = (props: Props) => {
                         </Button>
                     )}
 
-                    <Button variant='secondary' className='rounded-2xl'>
-                        Saiba mais
+                    <Button variant='secondary' className='rounded-2xl' asChild>
+                        <Link href={`/projeto/${props.projeto.id}`} >Saiba mais</Link>
                     </Button>
 
                     {shared ? (
