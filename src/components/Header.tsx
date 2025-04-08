@@ -2,10 +2,9 @@
 
 import React, { useEffect, useState } from 'react'
 import { Button } from './ui/button'
-import { Bell, Check, ExternalLink, FolderOpenDot, Menu, Newspaper, Plus, Search, Star, X } from 'lucide-react'
+import { Bell, Check, ExternalLink, FolderOpenDot, LogIn, Menu, Newspaper, Plus, Search, Star, X } from 'lucide-react'
 import { Sheet, SheetClose, SheetContent, SheetDescription, SheetFooter, SheetHeader, SheetTitle, SheetTrigger } from './ui/sheet'
 import { Label } from './ui/label'
-import { Input } from './ui/input'
 import DatePicker from './DatePicker'
 import { ModeToggle } from './ModeToggle'
 import { useTheme } from 'next-themes'
@@ -15,11 +14,16 @@ import { Card, CardDescription, CardFooter, CardHeader, CardTitle } from './ui/c
 import { checkAgent } from '@/hooks/is-mobile'
 import { Popover, PopoverContent, PopoverTrigger } from './ui/popover'
 import Link from 'next/link'
+import { Input } from './ui/input'
+import { Textarea } from './ui/textarea'
+import { format } from 'date-fns'
+import { useRouter } from 'next/navigation'
 
 
 type Props = {}
 
 const Header = (props: Props) => {
+
 
     const initialNotifications = [
         {
@@ -59,6 +63,8 @@ const Header = (props: Props) => {
         },
     ]
 
+    const [userType, setUserType] = useState<string | null>(null)
+    const [token, setToken] = useState<string | null>(null)
     const [notifications, setNotifications] = useState(initialNotifications)
     const unreadCount = notifications.filter((notification) => !notification.read).length
     const [open, setOpen] = useState(false)
@@ -79,8 +85,72 @@ const Header = (props: Props) => {
 
     const theme = useTheme();
 
+    const router = useRouter();
+
     const [dateInicio, setDateInicio] = useState<Date>();
     const [dateEntrega, setDateEntrega] = useState<Date>();
+    const [nome, setNome] = useState<string>('');
+    const [descricao, setDescricao] = useState<string>('');
+
+    const onChangeDescricao = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
+        event.preventDefault();
+
+        setDescricao(event.target.value);
+    }
+
+    const onChangeTitulo = (event: React.ChangeEvent<HTMLInputElement>) => {
+        event.preventDefault();
+
+        setNome(event.target.value);
+    }
+
+    const postProjeto = async () => {
+
+        const projeto: ProjetoRequest = {
+            nome: nome,
+            dataPrevistaInicio: dateInicio ? format(dateInicio.toDateString(), "yyyy-MM-dd") : '',
+            dataPrevistaEntrega: dateEntrega ? format(dateEntrega.toString(), "yyyy-MM-dd") : '',
+            descricao: descricao
+        }
+
+        console.log(projeto);
+        
+
+        const response = await fetch('http://localhost:8080/api/projeto/create', {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-type': 'application/json'
+            },
+            body: JSON.stringify(projeto)
+        })
+
+        if (!response.ok) {
+            const errorData = await response.json().catch(() => null)
+            throw new Error(errorData?.erro || `Erro: Ocorreu um erro ao enviar seu projeto!`)
+        }
+
+        if(response.status == 201){
+            router.refresh();
+        }
+    }
+
+    const handlePostProjeto = async (event: React.MouseEvent<HTMLButtonElement>) => {
+        event.preventDefault();
+
+        try {
+            toast.promise(postProjeto(), {
+                loading: "Enviando seu projeto... Por favor, aguarde",
+                success: <b>Projeto enviado com sucesso!</b>,
+                error: (error: any) => {
+                    return error.message
+                },
+                position: 'top-left'
+            })
+        } catch (error) {
+            console.log(error);
+        }
+    }
 
     const [agent, setAgent] = useState<boolean>();
 
@@ -89,6 +159,10 @@ const Header = (props: Props) => {
 
 
     useEffect(() => {
+        const storedToken = localStorage.getItem("token")
+        setToken(storedToken || "");
+        const storedUserType = localStorage.getItem("userType")
+        setUserType(storedUserType || "")
         checkUserAgent();
     }, [])
 
@@ -111,19 +185,25 @@ const Header = (props: Props) => {
                         </SheetHeader>
 
                         <Button variant='outline' asChild >
-                                <Link href='/feed' className='flex justify-between gap-2'><Newspaper />Voltar ao início</Link>
+                            <Link href='/feed' className='flex justify-between gap-2'><Newspaper />Voltar ao início</Link>
                         </Button>
 
                         <Button variant='outline' asChild>
-                            <Link href='/projetos'className='flex justify-between gap-2' ><FolderOpenDot className='mt-[2px]' /> Meus projetos</Link>
+                            <Link href='/projetos' className='flex justify-between gap-2' ><FolderOpenDot className='mt-[2px]' /> Meus projetos</Link>
                         </Button>
+
+                        {!token ? (
+                            <Button asChild variant='outline'>
+                                <Link href='/login' className='flex justify-between gap-2' ><LogIn /> Efetuar Login</Link>
+                            </Button>
+                        ) : ""}
 
                         {!agent ? (<div className='grid grid-cols-1 gap-4'>
                             <Button variant={'outline'} asChild>
-                                <Link href='/search' className='flex justify-between gap-2'><Search className='mt-[2px]'/>Pesquisar Projetos</Link>
+                                <Link href='/search' className='flex justify-between gap-2'><Search className='mt-[2px]' />Pesquisar Projetos</Link>
                             </Button>
                             <Button variant='outline' asChild>
-                                <Link href='/liked' className='flex justify-between gap-2'><Star className='mt-[2px]'/> Projetos que você curtiu</Link>
+                                <Link href='/liked' className='flex justify-between gap-2'><Star className='mt-[2px]' /> Projetos que você curtiu</Link>
                             </Button>
                         </div>) : ("")}
 
@@ -224,49 +304,46 @@ const Header = (props: Props) => {
                     </Popover>
                 )}
 
-                <Sheet>
-                    <SheetTrigger asChild>
-                        <Button variant="ghost" size="icon" className="text-white hover:bg-black/20">
-                            <Plus color={theme.theme === 'light' ? 'black' : 'white'} style={{ height: '30px', width: '30px' }} />
-                            <span className="sr-only">Add new</span>
-                        </Button>
-                    </SheetTrigger>
-                    <SheetContent side='right' className='container mx-auto px-4'>
-                        <SheetHeader>
-                            <SheetTitle>Criar Projeto</SheetTitle>
-                            <SheetDescription>
-                                Cadastre seu novo projeto na plataforma.
-                            </SheetDescription>
-                        </SheetHeader>
+                {userType == '' || userType !== 'EMPRESARIO' ? ('') : (
 
-                        <Label>Título do Projeto</Label>
-                        <Input placeholder='Título' />
+                    <Sheet>
+                        <SheetTrigger asChild>
+                            <Button variant="ghost" size="icon" className="text-white hover:bg-black/20">
+                                <Plus color={theme.theme === 'light' ? 'black' : 'white'} style={{ height: '30px', width: '30px' }} />
+                                <span className="sr-only">Add new</span>
+                            </Button>
+                        </SheetTrigger>
+                        <SheetContent side='right' className='container mx-auto px-4'>
+                            <SheetHeader>
+                                <SheetTitle>Criar Projeto</SheetTitle>
+                                <SheetDescription>
+                                    Cadastre seu novo projeto na plataforma.
+                                </SheetDescription>
+                            </SheetHeader>
 
-                        <DatePicker label='Data Prevista de Inicio' setDate={setDateInicio} />
-                        <DatePicker label='Data Prevista de Entrega' setDate={setDateEntrega} />
+                            <Label>Título do Projeto</Label>
+                            <Input placeholder='Título' onChange={onChangeTitulo} />
 
-                        <SheetFooter>
-                            <SheetClose asChild>
-                                <Button
-                                    type="submit"
-                                    variant='default'
-                                    onClick={() =>
-                                        toast('Projeto criado com sucesso', {
-                                            description: 'Data de Inicio: 02/04/2025',
-                                            action: {
-                                                label: 'Desfazer',
-                                                onClick: () => { console.log("a") },
-                                            },
-                                            position: 'top-left'
-                                        })
-                                    }
-                                >
-                                    Show Toast
-                                </Button>
-                            </SheetClose>
-                        </SheetFooter>
-                    </SheetContent>
-                </Sheet>
+                            <DatePicker label='Data Prevista de Inicio' setDate={setDateInicio} />
+                            <DatePicker label='Data Prevista de Entrega' setDate={setDateEntrega} />
+
+                            <Label>Fale sobre o projeto </Label>
+                            <Textarea placeholder='Adicione uma descrição' onChange={onChangeDescricao} />
+
+                            <SheetFooter>
+                                <SheetClose asChild>
+                                    <Button
+                                        type="submit"
+                                        variant='default'
+                                        onClick={handlePostProjeto}
+                                    >
+                                        Enviar Projeto
+                                    </Button>
+                                </SheetClose>
+                            </SheetFooter>
+                        </SheetContent>
+                    </Sheet>
+                )}
             </div>
         </header>
     )
