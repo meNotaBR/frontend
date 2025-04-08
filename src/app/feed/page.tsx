@@ -4,11 +4,14 @@ import ProjectsCarousel from '@/components/ProjectsCarousel'
 import { Label } from '@/components/ui/label'
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { TabsContent } from '@radix-ui/react-tabs'
+import { cookies } from 'next/headers'
 import React from 'react'
 
 type Props = {}
 
 const page = async (props: Props) => {
+
+    const token = (await cookies()).get('token')?.value;        
 
     const projetos = [
         { nome: "Projeto 1", img: 'https://t4.ftcdn.net/jpg/03/00/14/39/360_F_300143961_8kJTPiTbWallCIBxO0GQzoxgwE9cIRGG.jpg', descricao: "Detalhes do projeto Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s.", startup: { nome: 'empresa tal', descricao: 'descricao startup', empresario: 'nome empresario' } },
@@ -18,12 +21,17 @@ const page = async (props: Props) => {
         { nome: "Projeto 5", img: 'https://t4.ftcdn.net/jpg/03/00/14/39/360_F_300143961_8kJTPiTbWallCIBxO0GQzoxgwE9cIRGG.jpg', descricao: "Detalhes do projeto Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s.", startup: { nome: 'empresa tal', descricao: 'descricao startup', empresario: 'nome empresario' } },
     ]
 
-    const json = await fetch('http://localhost:8080/api/projeto/list')
+    const json = await fetch('http://localhost:8080/api/projeto/list', {
+        method: 'GET',
+        headers: {
+            'Authorization': `Bearer ${token}`
+        }
+    })
     const projects: Projeto[] = await json.json();
 
     let projetosGeral: Projeto[] = projects.sort((projeto1, projeto2) => { 
-                 if(projeto1.upvote.length < projeto2.upvote.length) return 1; 
-                 if(projeto1.upvote.length > projeto2.upvote.length) return -1; 
+                 if(projeto1.upvotes < projeto2.upvotes) return 1; 
+                 if(projeto1.upvotes > projeto2.upvotes) return -1; 
                  return 0; 
              });
 

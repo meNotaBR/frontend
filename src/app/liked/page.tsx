@@ -1,13 +1,22 @@
 import Header from '@/components/Header'
 import ProjectCard from '@/components/ProjectCard'
 import { Label } from '@/components/ui/label'
+import { cookies } from 'next/headers'
 import React from 'react'
 
 type Props = {}
 
 const page = async (props: Props) => {
 
-    const json = await fetch('http://localhost:8080/api/projeto/list')
+    const token = ((await cookies()).get('token'))?.value;
+
+    const json = await fetch('http://localhost:8080/api/projeto/list', {
+        method: 'GET',
+        headers: {
+            "Authorization": `Bearer ${token}`,
+            "Content-type": "application/json"
+        }
+    })
     const projects: Projeto[] = await json.json();
 
   return (<>
