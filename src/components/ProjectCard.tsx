@@ -10,6 +10,7 @@ import { ArrowUpFromLine, CalendarDays, Check, Share2 } from 'lucide-react'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from './ui/tooltip'
 import { HoverCard, HoverCardContent, HoverCardTrigger } from './ui/hover-card'
 import Link from 'next/link'
+import { calculaTempoPostagem } from '@/hooks/calcula-tempo'
 
 type Props = {
     projeto: Projeto
@@ -19,7 +20,7 @@ const ProjectCard = (props: Props) => {
 
     const [shared, setShared] = useState<boolean>(false)
     const [liked, setLiked] = useState<boolean>()
-    const [totalLikes, setTotalLikes] = useState<number>(props.projeto.upvote.length)
+    const [totalLikes, setTotalLikes] = useState<number>(props.projeto.upvotes)
     const [openTooltip, setOpenTooltip] = useState(false)
     const [openHoverCard, setOpenHoverCard] = useState(false)
 
@@ -43,20 +44,20 @@ const ProjectCard = (props: Props) => {
     }
 
     const likeProject = () => {
-        props.projeto.liked = true;
+        props.projeto.isLiked = true;
         setTotalLikes(totalLikes + 1);
     }
 
     const unlikeProject = () => {
-        props.projeto.liked = false;
+        props.projeto.isLiked = false;
         setTotalLikes(totalLikes - 1);
     }
 
     useEffect(() => {
-        if (props.projeto && props.projeto.liked !== undefined) {
-            setLiked(props.projeto.liked);
+        if (props.projeto && props.projeto.isLiked !== undefined) {
+            setLiked(props.projeto.isLiked);
         }
-    }, [props.projeto?.liked]);
+    }, [props.projeto?.isLiked]);
 
 
 
@@ -72,7 +73,7 @@ const ProjectCard = (props: Props) => {
 
                         <HoverCard open={openHoverCard} onOpenChange={setOpenHoverCard}>
                             <HoverCardTrigger asChild onClick={() => setOpenHoverCard(!openHoverCard)}>
-                                <Badge className="h-5 w-20">{props.projeto.startup.nomeFantasia}</Badge>
+                                <Badge className="h-5 w-20">{props.projeto.startup.nomeFantasia.length > 10 ? props.projeto.startup.nomeFantasia.substring(0, 9).concat('...') : props.projeto.startup.nomeFantasia}</Badge>
                             </HoverCardTrigger>
                             <HoverCardContent className="dark:bg-black ml-2">
                                 <div className="flex justify-between space-x-4">
@@ -95,20 +96,22 @@ const ProjectCard = (props: Props) => {
                                 </div>
                             </HoverCardContent>
                         </HoverCard>
-                        <Label className="ml-2">2 dias atrás</Label>
+                        <Label className="ml-2">{calculaTempoPostagem(props.projeto.dataCadastro)}</Label>
                     </div>
 
-                    <TooltipProvider>
-                        <Tooltip open={openTooltip} onOpenChange={setOpenTooltip}>
-                            <TooltipTrigger asChild onClick={() => setOpenTooltip(!openTooltip)}>
-                                <Badge className="ml-auto mt-1 bg-black text-amber-50 pl-1">🔥Pelando</Badge>
-                            </TooltipTrigger>
-                            <TooltipContent>
-                                <Label className='mb-2'>Os mais aquecidos da plataforma!🔥</Label>
-                                <p>Projetos que estão <b>pelando</b> recebem <b>upvotes dobrados!</b></p>
-                            </TooltipContent>
-                        </Tooltip>
-                    </TooltipProvider>
+                    {props.projeto.isPelando ? (
+                        <TooltipProvider>
+                            <Tooltip open={openTooltip} onOpenChange={setOpenTooltip}>
+                                <TooltipTrigger asChild onClick={() => setOpenTooltip(!openTooltip)}>
+                                    <Badge className="ml-auto mt-1 bg-black text-amber-50 pl-1">🔥Pelando</Badge>
+                                </TooltipTrigger>
+                                <TooltipContent>
+                                    <Label className='mb-2'>Os mais aquecidos da plataforma!🔥</Label>
+                                    <p>Projetos que estão <b>pelando</b> recebem <b>upvotes dobrados!</b></p>
+                                </TooltipContent>
+                            </Tooltip>
+                        </TooltipProvider>
+                    ) : ''}
 
                 </CardHeader>
                 <CardContent className='sm:max-h-[100px]'>
