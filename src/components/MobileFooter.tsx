@@ -7,10 +7,13 @@ import { Drawer, DrawerClose, DrawerContent, DrawerDescription, DrawerFooter, Dr
 import { Button } from './ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/card'
 import { ScrollArea } from './ui/scroll-area'
+import { usePathname } from 'next/navigation'
 
 type Props = {}
 
 const MobileFooter = (props: Props) => {
+
+    const pathname = usePathname();
 
     const initialNotifications = [
         {
@@ -71,11 +74,11 @@ const MobileFooter = (props: Props) => {
         <footer className="fixed bottom-0 left-0 right-0 bg-black w-full py-3 px-4">
             <div className="flex justify-between items-center max-w-md mx-auto">
                 <Link href="/feed" className="flex items-center justify-center text-blue-500">
-                    <Home className="h-5 w-5" color='white'/>
+                    <Home className="h-5 w-5" color={pathname === "/feed" ? '#892be2' : "white"}/>
                     <span className="sr-only">Home</span>
                 </Link>
                 <Link href="/search" className="flex items-center justify-center text-gray-400 hover:text-gray-300">
-                    <Search className="h-5 w-5" color='white' />
+                    <Search className="h-5 w-5" color={pathname === "/search" ? '#892be2' : "white"} />
                     <span className="sr-only">Search</span>
                 </Link>
 
@@ -154,7 +157,7 @@ const MobileFooter = (props: Props) => {
                     </DrawerContent>
                 </Drawer>
                 <Link href="/liked" className="flex items-center justify-center text-gray-400 hover:text-gray-300">
-                    <Star color='white' className="h-5 w-5" />
+                    <Star color={pathname === "/liked" ? '#892be2' : "white"} className="h-5 w-5" />
                     <span className="sr-only">Bookmarks</span>
                 </Link>
             </div>
