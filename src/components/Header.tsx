@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from 'react'
 import { Button } from './ui/button'
-import { Bell, Check, ExternalLink, FolderOpenDot, LogIn, Menu, Newspaper, Plus, Search, Star, X } from 'lucide-react'
+import { Bell, Check, ExternalLink, FolderOpenDot, LogIn, LogOut, Menu, Newspaper, Plus, Search, Star, X } from 'lucide-react'
 import { Sheet, SheetClose, SheetContent, SheetDescription, SheetFooter, SheetHeader, SheetTitle, SheetTrigger } from './ui/sheet'
 import { Label } from './ui/label'
 import DatePicker from './DatePicker'
@@ -18,12 +18,12 @@ import { Input } from './ui/input'
 import { Textarea } from './ui/textarea'
 import { format } from 'date-fns'
 import { useRouter } from 'next/navigation'
-
+import getCookie from '@/app/actions/get-cookie-action'
+import logout from '@/app/actions/clear-cookies-action'
 
 type Props = {}
 
 const Header = (props: Props) => {
-
 
     const initialNotifications = [
         {
@@ -157,12 +157,17 @@ const Header = (props: Props) => {
     const checkUserAgent = async () =>
         setAgent(await checkAgent());
 
+    const getTokenAndUserTypeCookie = async () => {
+        const userType = await getCookie('userType');
+        const token = await getCookie('token');        
+
+        setToken(token ?? '');
+        setUserType(userType ?? '');
+    }
+
 
     useEffect(() => {
-        const storedToken = localStorage.getItem("token")
-        setToken(storedToken || "");
-        const storedUserType = localStorage.getItem("userType")
-        setUserType(storedUserType || "")
+        getTokenAndUserTypeCookie();
         checkUserAgent();
     }, [])
 
@@ -196,7 +201,11 @@ const Header = (props: Props) => {
                             <Button asChild variant='outline'>
                                 <Link href='/login' className='flex justify-between gap-2' ><LogIn /> Efetuar Login</Link>
                             </Button>
-                        ) : ""}
+                        ) : (
+                            <Button asChild variant='destructive'>
+                                <Link onClick={logout} href='/login' className='flex justify-between gap-2' ><LogOut />Efetuar Logout</Link>
+                            </Button>
+                        )}
 
                         {!agent ? (<div className='grid grid-cols-1 gap-4'>
                             <Button variant={'outline'} asChild>
