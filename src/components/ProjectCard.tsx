@@ -96,7 +96,7 @@ const ProjectCard = (props: Props) => {
                                 </div>
                             </HoverCardContent>
                         </HoverCard>
-                        <Label className="ml-2">{calculaTempoPostagem(props.projeto.dataCadastro)}</Label>
+                        <Label className="ml-2 text-gray-400 text-xs">{calculaTempoPostagem(props.projeto.dataCadastro)}</Label>
                     </div>
 
                     {props.projeto.isPelando ? (
