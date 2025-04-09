@@ -1,10 +1,7 @@
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { useRouter } from 'next/navigation'
 import React, { useState } from 'react'
-import { toast } from 'sonner'
-import { setCookie } from 'cookies-next';
 import login from '../actions/login-action'
 
 type Props = {}
@@ -16,7 +13,6 @@ const page = (props: Props) => {
             <form
                 action={login}
                 className='grid grid-cols-1 gap-8'>
-
 
                 <div className='mb-20 mt-5'>
                     <img src="/menota.svg" alt="" />
@@ -34,8 +30,6 @@ const page = (props: Props) => {
                 </div>
             </form>
         </div>
-
-
     </>)
 }
 
