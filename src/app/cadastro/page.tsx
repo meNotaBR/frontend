@@ -1,13 +1,11 @@
-'use client'
-
 import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectValue, SelectTrigger } from '@/components/ui/select'
-import { useRouter } from 'next/navigation'
-import React, { useState } from 'react'
-import { toast } from 'sonner'
+import React from 'react'
+import cadastro from '../actions/cadastro-action'
+import Link from 'next/link'
 type Props = {}
 
 const page = (props: Props) => {
@@ -34,147 +32,36 @@ const page = (props: Props) => {
         { value: "2", label: "Empresário" }
     ]
 
-    const currentYear = new Date().getFullYear();
-    const years = Array.from({ length: currentYear - 1949 }, (_, i) => currentYear - i);
-
-    const [nome, setNome] = useState<string>('');
-    const [sobrenome, setSobrenome] = useState<string>('');
-    const [email, setEmail] = useState<string>('');
-    const [senha, setSenha] = useState<string>('');
-    const [cpf, setCpf] = useState<string>('');
-    const [contato, setContato] = useState<string>('');
-    const [dia, setDia] = useState<string>('');
-    const [mes, setMes] = useState<string>('');
-    const [ano, setAno] = useState<string>('');
-
-    const router = useRouter();
-
-    const [userType, setUserType] = useState<string>('');
-
-    const onChangeName = (event: React.ChangeEvent<HTMLInputElement>) => {
-        event.preventDefault();
-        setNome(event.target.value);
-    }
-
-    const onChangeSobrenome = (event: React.ChangeEvent<HTMLInputElement>) => {
-        event.preventDefault();
-        setSobrenome(event.target.value);
-    }
-
-    const onChangeEmail = (event: React.ChangeEvent<HTMLInputElement>) => {
-        event.preventDefault();
-        setEmail(event.target.value);
-    }
-
-    const onChangeSenha = (event: React.ChangeEvent<HTMLInputElement>) => {
-        event.preventDefault();
-        setSenha(event.target.value);
-    }
-
-    const onChangeCpf = (event: React.ChangeEvent<HTMLInputElement>) => {
-        event.preventDefault();
-        setCpf(event.target.value);
-    }
-
-    const onChangeContato = (event: React.ChangeEvent<HTMLInputElement>) => {
-        event.preventDefault();
-        setContato(event.target.value);
-    }
-
-    const onChangeDia = (dia: string) => {
-        setDia(dia);
-    }
-
-    const onChangeMes = (mes: string) => {
-        setMes(mes);
-    }
-
-    const onChangeAno = (ano: string) => {
-        setAno(ano);
-    }
-
-    const concatDates = (dia: string, mes: string, ano: string) => {
-        return `${ano}-${mes}-${dia}`;
-    }
-
-    const postCadastro = async () => {
-        var url = '';
-
-        const cadastro: EmpresarioRequest = {
-            nome: nome,
-            sobrenome: sobrenome,
-            email: email,
-            senha: senha,
-            cpf: cpf,
-            dataNasc: concatDates(dia, mes, ano)
-        }
-        if (userType == '1') {
-            url = 'http://localhost:8080/api/investor/create'
-
-        }else {
-            cadastro.numeroCelular = contato;
-            url = 'http://localhost:8080/api/empresario/create'
-        }
-
-        console.log('url: ' + url);
-        console.log('cadastro: ' + JSON.stringify(cadastro));
-        
-        
-
-        const json = await fetch(url, { method: 'POST', headers: {'Content-type': 'application/json'}, body: JSON.stringify(cadastro)});
-
-        if (!json.ok) {
-            const errorData = await json.json().catch(() => null)
-            throw new Error(errorData?.erro || 'Ocorreu algum erro em seu cadastro');
-        }
-
-        if (json.status == 201) {
-            router.push('/login');
-        }
-    }
-
-    const handleCadastro = async (event: React.MouseEvent<HTMLButtonElement>) => {
-        event.preventDefault();
-
-        toast.promise(postCadastro(), {
-            loading: "Efetuando seu cadastro... Por favor, aguarde!",
-            success: <b>Cadastro efetuado com sucesso!</b>,
-            error: (error: any) => {
-                return error.message
-            },
-            position: 'top-left'
-        })
-    }
+    const currentYear = new Date().getFullYear()
+    const years = Array.from({ length: currentYear - 1949 }, (_, i) => currentYear - i)
 
     return (
         <div className='flex justify-center'>
-            <div className='grid grid-cols-1 gap-3'>
+            <form 
+            action={cadastro}
+            className='grid grid-cols-1 gap-3'>
 
                 <img src="menota.svg" alt="" className='mb-8' />
                 <Label style={{ fontSize: '35px' }} className='flex justify-center mb-5' >Cadastre-se</Label>
                 <div className='grid grid-cols-2 gap-1 w-full'>
-                    <Input type='text' placeholder='Nome' className='rounded-2xl h-11' onChange={onChangeName}/>
-                    <Input type='text' placeholder='Sobrenome' className='rounded-2xl h-11' onChange={onChangeSobrenome}/>
+                    <Input id='nome' name='nome' type='text' placeholder='Nome' className='rounded-2xl h-11' />
+                    <Input id='sobrenome' name='sobrenome' type='text' placeholder='Sobrenome' className='rounded-2xl h-11' />
                 </div>
-                <Input type='email' placeholder='Email' className='rounded-2xl h-11' onChange={onChangeEmail}/>
-                <Input type='text' placeholder='CPF' className='rounded-2xl h-11' onChange={onChangeCpf}/>
-                
-                {userType == '2' ? (
-                    <Input type='text' placeholder='Contato' className='rounded-2xl h-11' onChange={onChangeContato}/>
-                ): ''}
+                <Input id='email' name='email' type='email' placeholder='Email' className='rounded-2xl h-11' />
+                <Input id='cpf' name='cpf' type='text' placeholder='CPF' className='rounded-2xl h-11' />
 
 
                 <div>
                     <Label className='flex justify-center mb-5 mt-2'>Data de Nascimento</Label>
                     <div className='grid grid-cols-3 gap-1'>
 
-                        <Select onValueChange={onChangeDia}>
+                        <Select name='dia'>
                             <SelectTrigger className='w-full rounded-2xl h-11'>
                                 <SelectValue placeholder='Dia' />
                             </SelectTrigger>
                             <SelectContent position='popper' className="w-[var(--radix-select-trigger-width)]">
                                 <SelectGroup>
-                                    <SelectLabel>Dias</SelectLabel>
+                                    <SelectLabel>Dia</SelectLabel>
                                     {days.map((element, index) => (
                                         <SelectItem value={String(element)} key={index}>{element}</SelectItem>
                                     ))}
@@ -182,7 +69,7 @@ const page = (props: Props) => {
                             </SelectContent>
                         </Select>
 
-                        <Select onValueChange={onChangeMes}>
+                        <Select name='mes'>
                             <SelectTrigger className='w-full rounded-2xl h-11'>
                                 <SelectValue placeholder='Mês' />
                             </SelectTrigger>
@@ -198,7 +85,7 @@ const page = (props: Props) => {
                             </SelectContent>
                         </Select>
 
-                        <Select onValueChange={onChangeAno}>
+                        <Select name='ano'>
                             <SelectTrigger className='w-full rounded-2xl h-11'>
                                 <SelectValue placeholder='Ano' />
                             </SelectTrigger>
@@ -216,7 +103,7 @@ const page = (props: Props) => {
 
                     </div>
                 </div>
-                <Select onValueChange={setUserType}>
+                <Select name='tipoUsuario'>
                     <SelectTrigger className='w-full rounded-2xl h-11'>
                         <SelectValue placeholder='Posição' />
                     </SelectTrigger>
@@ -224,13 +111,13 @@ const page = (props: Props) => {
                         <SelectGroup>
                             <SelectLabel>Posição</SelectLabel>
                             {tipoCadastro.map((element) => (
-                                <SelectItem value={element.value} key={element.value} defaultValue='1'>{element.label}</SelectItem>
+                                <SelectItem value={element.label} key={element.value}>{element.label}</SelectItem>
                             ))}
                         </SelectGroup>
                     </SelectContent>
                 </Select>
 
-                <Input type='password' placeholder='Senha' className='rounded-2xl h-11' onChange={onChangeSenha} />
+                <Input id='senha' name='senha' type='password' placeholder='Senha' className='rounded-2xl h-11' />
                 <Input type='password' placeholder='Repita a senha' className='rounded-2xl h-11' />
 
                 <div className="flex items-center space-x-2">
@@ -244,12 +131,12 @@ const page = (props: Props) => {
                 </div>
 
                 <div className='mt-10 flex justify-center'>
-                    <Button className='w-50 font-bold h-15 rounded-2xl text-lg' onClick={handleCadastro}>Cadastrar-se</Button>
+                    <Button className='w-50 font-bold h-15 rounded-2xl text-lg'>Cadastrar-se</Button>
                 </div>
 
-                <Label className='flex justify-center mt-4 text-blue-600'> Já tem uma conta ? <Label className='underline'>Faça login</Label></Label>
+                <Label className='flex justify-center mt-4 text-blue-600'> Já tem uma conta ? <Label className='underline'><Link href={'/login'}>Faça login</Link></Label></Label>
 
-            </div>
+            </form>
         </div>
     )
 }
