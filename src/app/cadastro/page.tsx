@@ -49,6 +49,7 @@ const page = (props: Props) => {
                 </div>
                 <Input id='email' name='email' type='email' placeholder='Email' className='rounded-2xl h-11' />
                 <Input id='cpf' name='cpf' type='text' placeholder='CPF' className='rounded-2xl h-11' />
+                <Input id='contato' name='contato' type='text' placeholder='Número de celular' className='rounded-2xl h-11' />
 
 
                 <div>
