@@ -1,6 +1,6 @@
 'use client'
 
-import { Bell, Bookmark, Check, Home, Mail, Search, Star, X } from 'lucide-react'
+import { Bell, Check, Home, Search, Star, X } from 'lucide-react'
 import Link from 'next/link'
 import React, { useState } from 'react'
 import { Drawer, DrawerClose, DrawerContent, DrawerDescription, DrawerFooter, DrawerHeader, DrawerTitle, DrawerTrigger } from './ui/drawer'
@@ -13,7 +13,7 @@ type Props = {}
 
 const MobileFooter = (props: Props) => {
 
-    const pathname = usePathname();
+    const pathname = usePathname();    
 
     const initialNotifications = [
         {
@@ -71,7 +71,7 @@ const MobileFooter = (props: Props) => {
     }
 
     return (
-        <footer className="fixed bottom-0 left-0 right-0 bg-black w-full py-3 px-4">
+        <footer className="fixed bottom-0 left-0 right-0 dark:bg-black not-dark:bg-white w-full py-3 px-4">
             <div className="flex justify-between items-center max-w-md mx-auto">
                 <Link href="/feed" className="flex items-center justify-center text-blue-500">
                     <Home className="h-5 w-5" color={pathname === "/feed" ? '#892be2' : "white"}/>
