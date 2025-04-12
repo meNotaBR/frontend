@@ -6,6 +6,7 @@ import { headers } from "next/headers";
 import { isMobile } from "@/hooks/user-agent";
 import MobileFooter from "@/components/MobileFooter";
 import { Toaster } from "sonner";
+import getCookie from "./actions/get-cookie-action";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -31,6 +32,8 @@ export default async function RootLayout({
   const userAgent = (await headers()).get("user-agent") || "";
   const mobileCheck = isMobile(userAgent);
 
+  const token = await getCookie('token');
+
   return (
     <html lang="en" suppressHydrationWarning>
       <body
@@ -44,7 +47,7 @@ export default async function RootLayout({
         >
           <div className="container mx-auto px-4">{children}</div>
         </ThemeProvider>
-        {mobileCheck ? (<MobileFooter/>) : ('')}
+        {mobileCheck && token ? (<MobileFooter/>) : ('')}
         <Toaster theme="dark" className="flex absolute"/>
       </body>
     </html>
