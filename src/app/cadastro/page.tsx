@@ -1,9 +1,11 @@
+'use client'
+
 import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectValue, SelectTrigger } from '@/components/ui/select'
-import React from 'react'
+import React, { useState } from 'react'
 import cadastro from '../actions/cadastro-action'
 import Link from 'next/link'
 type Props = {}
@@ -35,21 +37,23 @@ const page = (props: Props) => {
     const currentYear = new Date().getFullYear()
     const years = Array.from({ length: currentYear - 1949 }, (_, i) => currentYear - i)
 
+    const [userType, setUserType] = useState<string>('');
+
     return (
         <div className='flex justify-center'>
-            <form 
-            action={cadastro}
-            className='grid grid-cols-1 gap-3'>
+            <form
+                action={cadastro}
+                className='grid grid-cols-1 gap-3'>
 
                 <img src="menota.svg" alt="" className='mb-8' />
                 <Label style={{ fontSize: '35px' }} className='flex justify-center mb-5' >Cadastre-se</Label>
                 <div className='grid grid-cols-2 gap-1 w-full'>
-                    <Input id='nome' name='nome' type='text' placeholder='Nome' className='rounded-2xl h-11' />
-                    <Input id='sobrenome' name='sobrenome' type='text' placeholder='Sobrenome' className='rounded-2xl h-11' />
+                    <Input required id='nome' name='nome' type='text' placeholder='Nome' className='rounded-2xl h-11' />
+                    <Input required id='sobrenome' name='sobrenome' type='text' placeholder='Sobrenome' className='rounded-2xl h-11' />
                 </div>
-                <Input id='email' name='email' type='email' placeholder='Email' className='rounded-2xl h-11' />
-                <Input id='cpf' name='cpf' type='text' placeholder='CPF' className='rounded-2xl h-11' />
-                <Input id='contato' name='contato' type='text' placeholder='Número de celular' className='rounded-2xl h-11' />
+                <Input required id='email' name='email' type='email' placeholder='Email' className='rounded-2xl h-11' />
+                <Input required id='cpf' name='cpf' type='text' placeholder='CPF' className='rounded-2xl h-11' />
+                <Input required id='contato' name='contato' type='text' placeholder='Número de celular' className='rounded-2xl h-11' />
 
 
                 <div>
@@ -104,7 +108,7 @@ const page = (props: Props) => {
 
                     </div>
                 </div>
-                <Select name='tipoUsuario'>
+                <Select name='tipoUsuario' onValueChange={setUserType}>
                     <SelectTrigger className='w-full rounded-2xl h-11'>
                         <SelectValue placeholder='Posição' />
                     </SelectTrigger>
@@ -112,14 +116,22 @@ const page = (props: Props) => {
                         <SelectGroup>
                             <SelectLabel>Posição</SelectLabel>
                             {tipoCadastro.map((element) => (
-                                <SelectItem value={element.label} key={element.value}>{element.label}</SelectItem>
+                                <SelectItem value={element.value} key={element.value}>{element.label}</SelectItem>
                             ))}
                         </SelectGroup>
                     </SelectContent>
                 </Select>
 
-                <Input id='senha' name='senha' type='password' placeholder='Senha' className='rounded-2xl h-11' />
-                <Input type='password' placeholder='Repita a senha' className='rounded-2xl h-11' />
+                {userType == "2" ? (
+                    <>
+                        <Label style={{ fontSize: '35px' }} className='flex justify-center mb-5'>Dados da sua Startup</Label>
+                        <Input required id='nomeFantasia' name='nomeFantasia' type='text' placeholder='Nome da sua startup' className='rounded-2xl h-11' />
+                        <Input required id='cnpj' name='cnpj' type='text' placeholder='CNPJ' className='rounded-2xl h-11' />
+                    </>
+                ) : ''}
+
+                <Input required id='senha' name='senha' type='password' placeholder='Senha' className='rounded-2xl h-11' />
+                <Input required type='password' placeholder='Repita a senha' className='rounded-2xl h-11' />
 
                 <div className="flex items-center space-x-2">
                     <Checkbox id="terms" />
