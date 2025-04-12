@@ -8,14 +8,13 @@ interface Cadastro {
     cpf: string,
     email: string,
     senha: string,
-    numeroCelular?: string,
+    numeroCelular: string,
     dataNasc: string,
+    nomeFantasia?: string,
+    cnpj?: string
 }
 
 export default async function cadastro(formData: FormData){
-
-    console.log(formData);
-    
 
     const dataNasc = concatDates(formData.get('dia') as string, formData.get('mes') as string, formData.get('ano') as string);
 
@@ -27,20 +26,17 @@ export default async function cadastro(formData: FormData){
         email: formData.get('email') as string,
         senha: formData.get('senha') as string,
         dataNasc: dataNasc
-    }
-
-    console.log(cadastro);
-    
+    }    
 
     var url = 'http://localhost:8080/api/';
 
-    if(formData.get('tipoUsuario') === 'Empresário'){
+    if(formData.get('tipoUsuario') === '2'){
+        cadastro.nomeFantasia = formData.get('nomeFantasia') as string;
+        cadastro.cnpj = formData.get('cnpj') as string;
         url = url.concat('empresario/create');
     }else{
         url = url.concat('investor/create');
     }
-
-    console.log(url);
     
     const response = await fetch(url, {
         method: 'POST',
