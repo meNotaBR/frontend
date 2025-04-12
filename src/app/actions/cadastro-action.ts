@@ -23,6 +23,7 @@ export default async function cadastro(formData: FormData){
         nome: formData.get('nome') as string,
         sobrenome: formData.get('sobrenome') as string,
         cpf: formData.get('cpf') as string,
+        numeroCelular: formData.get('contato') as string,
         email: formData.get('email') as string,
         senha: formData.get('senha') as string,
         dataNasc: dataNasc
@@ -33,8 +34,7 @@ export default async function cadastro(formData: FormData){
 
     var url = 'http://localhost:8080/api/';
 
-    if(formData.get('tipoUsuario') === 'Empresario'){
-        cadastro.numeroCelular = formData.get('numeroCelular') as string;
+    if(formData.get('tipoUsuario') === 'Empresário'){
         url = url.concat('empresario/create');
     }else{
         url = url.concat('investor/create');
