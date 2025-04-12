@@ -1,7 +1,6 @@
 'use server'
 
 import { cookies } from "next/headers";
-import { redirect } from "next/navigation";
 
 export default async function login(formData: FormData) {
     const user: UserLogin = {
@@ -46,6 +45,4 @@ export default async function login(formData: FormData) {
         maxAge: 7200,
         httpOnly: true
     });
-
-    redirect('/feed')
 }
