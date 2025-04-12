@@ -1,17 +1,37 @@
+'use client'
+
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import React, { useState } from 'react'
 import login from '../actions/login-action'
+import { toast } from 'sonner'
+import { useRouter } from 'next/navigation'
 
 type Props = {}
 
 const page = (props: Props) => {
 
+    const router = useRouter();
+
+    const handlelogin = async (formData: FormData) => {
+
+        toast.promise(login(formData), {
+            loading: 'Efeutando seu login...',
+            success: () => {
+                router.push('/feed');
+
+                return <b>login efetuado com successo!</b>
+            },
+            error: 'Erro ao efetuar seu login.',
+            position: 'top-left'
+        });
+    }
+
     return (<>
         <div className='flex justify-center items-center'>
             <form
-                action={login}
+                action={handlelogin}
                 className='grid grid-cols-1 gap-8'>
 
                 <div className='mb-20 mt-5'>
