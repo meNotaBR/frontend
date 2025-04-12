@@ -229,7 +229,7 @@ const Header = (props: Props) => {
 
                 <ModeToggle />
 
-                {agent ? '' : (
+                {agent && !token ? '' : (
                     <Popover open={open} onOpenChange={setOpen}>
                         <PopoverTrigger asChild className='ml-1'>
                             <Button variant="outline" size="icon" className="relative">
