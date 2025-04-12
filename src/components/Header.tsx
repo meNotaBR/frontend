@@ -114,7 +114,7 @@ const Header = (props: Props) => {
         }
 
         console.log(projeto);
-        
+
 
         const response = await fetch('http://localhost:8080/api/projeto/create', {
             method: 'POST',
@@ -159,7 +159,7 @@ const Header = (props: Props) => {
 
     const getTokenAndUserTypeCookie = async () => {
         const userType = await getCookie('userType');
-        const token = await getCookie('token');        
+        const token = await getCookie('token');
 
         setToken(token ?? '');
         setUserType(userType ?? '');
@@ -197,16 +197,6 @@ const Header = (props: Props) => {
                             <Link href='/projetos' className='flex justify-between gap-2' ><FolderOpenDot className='mt-[2px]' /> Meus projetos</Link>
                         </Button>
 
-                        {!token ? (
-                            <Button asChild variant='outline'>
-                                <Link href='/login' className='flex justify-between gap-2' ><LogIn /> Efetuar Login</Link>
-                            </Button>
-                        ) : (
-                            <Button asChild variant='destructive'>
-                                <Link onClick={logout} href='/login' className='flex justify-between gap-2' ><LogOut />Efetuar Logout</Link>
-                            </Button>
-                        )}
-
                         {!agent ? (<div className='grid grid-cols-1 gap-4'>
                             <Button variant={'outline'} asChild>
                                 <Link href='/search' className='flex justify-between gap-2'><Search className='mt-[2px]' />Pesquisar Projetos</Link>
@@ -218,7 +208,15 @@ const Header = (props: Props) => {
 
                         <SheetFooter>
                             <SheetClose asChild>
-                                <Button type="submit">Save changes</Button>
+                                {!token ? (
+                                    <Button asChild variant='outline'>
+                                        <Link href='/login' className='flex justify-between gap-2' ><LogIn /> Efetuar Login</Link>
+                                    </Button>
+                                ) : (
+                                    <Button asChild variant='destructive'>
+                                        <Link onClick={logout} href='/login' className='flex justify-between gap-2' ><LogOut />Efetuar Logout</Link>
+                                    </Button>
+                                )}
                             </SheetClose>
                         </SheetFooter>
                     </SheetContent>
