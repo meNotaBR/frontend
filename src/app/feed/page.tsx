@@ -4,14 +4,14 @@ import ProjectsCarousel from '@/components/ProjectsCarousel'
 import { Label } from '@/components/ui/label'
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { TabsContent } from '@radix-ui/react-tabs'
-import { cookies } from 'next/headers'
 import React from 'react'
+import getCookie from '../actions/get-cookie-action'
 
 type Props = {}
 
 const page = async (props: Props) => {
 
-    const token = (await cookies()).get('token')?.value;        
+    const token = await getCookie('token'); 
 
     const projetos = [
         { nome: "Projeto 1", img: 'https://t4.ftcdn.net/jpg/03/00/14/39/360_F_300143961_8kJTPiTbWallCIBxO0GQzoxgwE9cIRGG.jpg', descricao: "Detalhes do projeto Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s.", startup: { nome: 'empresa tal', descricao: 'descricao startup', empresario: 'nome empresario' } },
@@ -21,12 +21,21 @@ const page = async (props: Props) => {
         { nome: "Projeto 5", img: 'https://t4.ftcdn.net/jpg/03/00/14/39/360_F_300143961_8kJTPiTbWallCIBxO0GQzoxgwE9cIRGG.jpg', descricao: "Detalhes do projeto Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s.", startup: { nome: 'empresa tal', descricao: 'descricao startup', empresario: 'nome empresario' } },
     ]
 
-    const json = await fetch('http://localhost:8080/api/projeto/list', {
-        method: 'GET',
-        headers: {
-            'Authorization': `Bearer ${token}`
-        }
-    })
+    var json: Response
+
+    if(token){
+        json = await fetch('http://localhost:8080/api/projeto/list', {
+            method: 'GET',
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        })
+    }else{
+        json = await fetch('http://localhost:8080/api/projeto/list', {
+            method: 'GET'
+        })
+    }
+
     const projects: Projeto[] = await json.json();
 
     let projetosGeral: Projeto[] = projects.sort((projeto1, projeto2) => { 
@@ -50,12 +59,12 @@ const page = async (props: Props) => {
                 </TabsList>
                 <TabsContent value='Para Você' className='grid lg:grid-cols-3 md:grid-cols-2 gap-4' >
                     {projetosGeral.map((projeto, index) => (
-                        <ProjectCard projeto={projeto} key={index} />
+                        <ProjectCard projeto={projeto} token={token ?? ""} key={index} />
                     ))}
                 </TabsContent>
                 <TabsContent value='Últimos Projetos' className='grid lg:grid-cols-3 md:grid-cols-2 gap-4'>
                     {projetosGeral.map((projeto, index) => (
-                        <ProjectCard projeto={projeto} key={index} />
+                        <ProjectCard projeto={projeto} token={token ?? ""} key={index} />
                     ))}
                 </TabsContent>
             </Tabs>
