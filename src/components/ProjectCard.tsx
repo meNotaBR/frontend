@@ -13,18 +13,66 @@ import Link from 'next/link'
 import { calculaTempoPostagem } from '@/hooks/calcula-tempo'
 
 type Props = {
+    token?: string,
     projeto: Projeto
 }
 
 const ProjectCard = (props: Props) => {
 
-    const [shared, setShared] = useState<boolean>(false)
-    const [liked, setLiked] = useState<boolean>()
-    const [totalLikes, setTotalLikes] = useState<number>(props.projeto.upvotes)
-    const [openTooltip, setOpenTooltip] = useState(false)
-    const [openHoverCard, setOpenHoverCard] = useState(false)
+    const [shared, setShared] = useState<boolean>(false);
+    const [liked, setLiked] = useState<boolean>();
+    const [totalLikes, setTotalLikes] = useState<number>(props.projeto.upvotes);
+    const [openTooltip, setOpenTooltip] = useState(false);
+    const [openHoverCard, setOpenHoverCard] = useState(false);
 
-    const date = new Date(props.projeto.startup.dataCadastro)
+    const sendUpvote = async () => {
+
+        const upvote: Upvote = {
+            projeto: {
+                id: props.projeto.id
+            }
+        }
+
+        const response = await fetch('http://localhost:8080/api/upvote/create', {
+            method: 'POST',
+            headers: {
+                "Content-type": "application/json",
+                "Authorization": `Bearer ${props.token}`
+            },
+            body: JSON.stringify(upvote)
+        })
+
+        if(!response.ok){
+            throw new Error("Erro ao enviar seu upvote");
+        }
+
+        likeProject();
+    }
+
+    const removeUpvote = async () => {
+        const upvote: Upvote = {
+            projeto: {
+                id: props.projeto.id
+            }
+        }
+
+        const response = await fetch('http://localhost:8080/api/upvote/delete', {
+            method: 'DELETE',
+            headers: {
+                "Content-type": "application/json",
+                "Authorization": `Bearer ${props.token}`
+            },
+            body: JSON.stringify(upvote)
+        })
+
+        if(!response.ok){
+            throw new Error("Erro ao enviar seu upvote");
+        }
+
+        unlikeProject();
+    }
+
+    const date = new Date(props.projeto.startup.dataCadastro);
 
 
     const checkDescriptionSize = (desc: string) => {
@@ -121,11 +169,11 @@ const ProjectCard = (props: Props) => {
                 <CardFooter className='flex justify-around sm:mt-4'>
 
                     {liked ? (
-                        <Button variant='secondary' className='rounded-2xl dark:bg-[#892be2] not-dark:bg-[#FF00FF]' onClick={() => unlikeProject()}>
+                        <Button variant='secondary' className='rounded-2xl dark:bg-[#892be2] not-dark:bg-[#FF00FF]' onClick={removeUpvote}>
                             <ArrowUpFromLine /> {totalLikes}
                         </Button>
                     ) : (
-                        <Button variant='secondary' className='rounded-[15px]' onClick={() => likeProject()}>
+                        <Button variant='secondary' className='rounded-[15px]' onClick={sendUpvote}>
                             <ArrowUpFromLine /> {totalLikes}
                         </Button>
                     )}
