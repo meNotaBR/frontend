@@ -1,45 +1,61 @@
 import React from 'react'
 import { Label } from './ui/label'
-import { Carousel, CarouselContent, CarouselItem } from './ui/carousel'
+import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from './ui/carousel'
 import { Card, CardContent, CardFooter } from './ui/card'
 import { Button } from './ui/button'
-import { ArrowUpFromLine } from 'lucide-react'
+import { ArrowRight, ArrowUpFromLine } from 'lucide-react'
+import Image from 'next/image'
+import { isMobile } from '@/hooks/user-agent'
+import { headers } from 'next/headers'
 
 type Props = {
     label: string,
     projetos: any[],
 }
 
-const ProjectsCarousel = (props: Props) => {
+const ProjectsCarousel = async (props: Props) => {
+
+  const userAgent = (await headers()).get("user-agent") || "";
+  const mobileCheck = isMobile(userAgent);
+
     return (
         <div className='mb-8'>
-    <Label className='lg:text-3xl sm:text-2xl mb-4 lg:justify-center sm:justify-self-start'>{props.label}</Label>
-    <Carousel className="w-full">
+            <Label className='lg:text-3xl sm:text-2xl mb-4 lg:justify-center sm:justify-self-start'>{props.label}</Label>
+            <Carousel className="w-full">
                 <CarouselContent className=''>
                     {props.projetos.map((element, index) => (
                         <CarouselItem key={index} className="sm:bases-1/1 md:basis-1/2 lg:basis-1/3 ">
-                            <Card className="overflow-hidden h-full flex flex-col pt-0 pb-2">
-                                <CardContent className="p-0 flex-grow">
-                                    <img
-                                        src={element.img || "/placeholder.svg"}
-                                        alt={element.nome}
-                                        key={index}
-                                        className="w-full object-cover rounded-[8px] h-[250px]"
-                                    />
-                                </CardContent>
-                                <CardFooter className='flex justify-around gap-2' >
-                                    <Button variant='default' className='rounded-2xl w-[50%] '>
-                                        <ArrowUpFromLine /> 2
-                                    </Button>
-
-                                    <Button variant='default' className='rounded-2xl w-[50%]'>
-                                        Saiba mais
-                                    </Button>
-                                </CardFooter>
-                            </Card>
+                                <Card className="h-full overflow-hidden group hover:border-primary/30 transition-all duration-300 pt-0">
+                                    <div className="relative h-48 overflow-hidden">
+                                        <Image
+                                            src={element.img || "/placeholder.svg"}
+                                            alt={element.nome}
+                                            fill
+                                            className="object-cover transition-transform duration-500 group-hover:scale-105 rounded-2xl"
+                                        />
+                                        <div className="absolute top-3 right-3 bg-background/80 backdrop-blur-sm px-3 py-1 rounded-full text-sm font-medium flex items-center gap-1">
+                                            <ArrowUpFromLine className="h-4 w-4 text-primary fill-primary" />
+                                            {'1000'}
+                                        </div>
+                                    </div>
+                                    <CardContent className="p-6">
+                                        <h3 className="text-xl font-bold mb-2">{element.nome}</h3>
+                                        <p className="text-muted-foreground mb-4">{element.descricao}</p>
+                                        <Button variant="ghost" size="sm" className="group/btn">
+                                            Saiba mais
+                                            <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover/btn:translate-x-1" />
+                                        </Button>
+                                    </CardContent>
+                                </Card>
                         </CarouselItem>
                     ))}
                 </CarouselContent>
+                {!mobileCheck ? (
+                    <>
+                        <CarouselPrevious />
+                        <CarouselNext />
+                    </>
+                ): ''}
             </Carousel>
         </div>
     )
