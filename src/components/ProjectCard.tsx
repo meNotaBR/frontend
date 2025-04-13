@@ -25,6 +25,13 @@ const ProjectCard = (props: Props) => {
     const [openTooltip, setOpenTooltip] = useState(false);
     const [openHoverCard, setOpenHoverCard] = useState(false);
 
+    const copyUrl = () => {
+        
+        navigator.clipboard.writeText(window.location.href.replace('feed', `projeto/${props.projeto.id}`));
+
+        sharedTrue();
+    }
+
     const sendUpvote = async () => {
 
         const upvote: Upvote = {
@@ -42,7 +49,7 @@ const ProjectCard = (props: Props) => {
             body: JSON.stringify(upvote)
         })
 
-        if(!response.ok){
+        if (!response.ok) {
             throw new Error("Erro ao enviar seu upvote");
         }
 
@@ -65,7 +72,7 @@ const ProjectCard = (props: Props) => {
             body: JSON.stringify(upvote)
         })
 
-        if(!response.ok){
+        if (!response.ok) {
             throw new Error("Erro ao enviar seu upvote");
         }
 
@@ -111,7 +118,7 @@ const ProjectCard = (props: Props) => {
 
     return (
         <div>
-            <Card>
+            <Card className='hover:border-primary/30 transition-all duration-300'>
                 <CardHeader className='flex'>
                     <div className="flex items-center gap-2">
                         <Avatar>
@@ -169,11 +176,11 @@ const ProjectCard = (props: Props) => {
                 <CardFooter className='flex justify-around sm:mt-4'>
 
                     {liked ? (
-                        <Button variant='secondary' className='rounded-2xl dark:bg-[#892be2] not-dark:bg-[#FF00FF]' onClick={removeUpvote}>
+                        <Button disabled={!props.token} variant='secondary' className='rounded-2xl dark:bg-[#892be2] not-dark:bg-[#FF00FF]' onClick={removeUpvote}>
                             <ArrowUpFromLine /> {totalLikes}
                         </Button>
                     ) : (
-                        <Button variant='secondary' className='rounded-[15px]' onClick={sendUpvote}>
+                        <Button disabled={!props.token} variant='secondary' className='rounded-[15px]' onClick={sendUpvote}>
                             <ArrowUpFromLine /> {totalLikes}
                         </Button>
                     )}
@@ -187,9 +194,9 @@ const ProjectCard = (props: Props) => {
                             <Check /> Link Copiado
                         </Button>) :
                         (
-                            <Button variant='secondary' style={{ borderRadius: '15px', fontSize: '0.8em' }} onClick={() => sharedTrue()}>
-                                <Share2 /> Compartilhar
-                            </Button>)}
+                        <Button variant='secondary' style={{ borderRadius: '15px', fontSize: '0.8em' }} onClick={copyUrl}>
+                            <Share2 /> Compartilhar
+                        </Button>)}
                 </CardFooter>
             </Card>
         </div>
