@@ -86,8 +86,8 @@ export default function Home() {
             engajamento e validação de outros investidores.
           </p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-            <Button size="lg" className="rounded-full px-8">
-              Acesse já
+            <Button asChild size="lg" className="rounded-full px-8">
+              <Link href={`/feed`}>Acesse já</Link>
             </Button>
           </div>
         </motion.div>
