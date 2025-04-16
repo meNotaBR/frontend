@@ -281,7 +281,7 @@ export default function Home() {
           >
             <div className="absolute inset-0 bg-gradient-to-br from-primary/20 to-background/0" />
             <img
-              src="dash.jpg"
+              src="dashboard.png"
               alt="Investor Dashboard"
               className="object-cover"
             />
