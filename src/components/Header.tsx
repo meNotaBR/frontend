@@ -194,7 +194,7 @@ const Header = (props: Props) => {
                         </Button>
 
                         <Button variant='outline' asChild>
-                            <Link href='/projetos' className='flex justify-between gap-2' ><FolderOpenDot className='mt-[2px]' /> Meus projetos</Link>
+                            <Link href='/projeto/meus' className='flex justify-between gap-2' ><FolderOpenDot className='mt-[2px]' /> Meus projetos</Link>
                         </Button>
 
                         {!agent ? (<div className='grid grid-cols-1 gap-4'>
