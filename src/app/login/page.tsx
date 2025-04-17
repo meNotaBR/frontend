@@ -7,6 +7,7 @@ import React, { useState } from 'react'
 import login from '../actions/login-action'
 import { toast } from 'sonner'
 import { useRouter } from 'next/navigation'
+import Link from 'next/link'
 
 type Props = {}
 
@@ -43,7 +44,10 @@ const page = (props: Props) => {
                 <Input id='email' name='email' type='email' placeholder='Email' className='h-11 rounded-2xl' />
                 <Input id='password' name='password' type='password' placeholder='Senha' className='h-11 rounded-2xl' />
 
-                <Label className='underline'>Esqueceu sua senha ?</Label>
+                <div className='flex justify-between'>
+                    <Link href={"/"} className='underline'>Esqueceu sua senha ?</Link>
+                    <Link className='underline' href={"/cadastro"} >Não tem uma conta? Cadastre-se</Link>
+                </div>
 
                 <div className='mt-10 flex justify-center'>
                     <Button type='submit' className='w-50 font-bold h-15 rounded-2xl text-lg'>Entrar</Button>
