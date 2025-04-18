@@ -27,7 +27,7 @@ const page = async (props: Props) => {
       
       <div className='grid lg:grid-cols-3 md:grid-cols-2 gap-4'>
           {projects.map((projeto, index) => (
-              <ProjectCard projeto={projeto} key={index} />
+              <ProjectCard projeto={projeto} key={index} token={token}/>
           ))}
       </div>
       
