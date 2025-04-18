@@ -24,10 +24,11 @@ const ProjectCard = (props: Props) => {
     const [totalLikes, setTotalLikes] = useState<number>(props.projeto.upvotes);
     const [openTooltip, setOpenTooltip] = useState(false);
     const [openHoverCard, setOpenHoverCard] = useState(false);
+    const baseUrl = `${window.location.protocol}//${window.location.host}/`;
 
     const copyUrl = () => {
-        
-        navigator.clipboard.writeText(window.location.href.replace('feed', `projeto/${props.projeto.id}`));
+
+        navigator.clipboard.writeText(baseUrl.concat(`projeto/${props.projeto.id}`));
 
         sharedTrue();
     }
