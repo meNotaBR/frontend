@@ -20,6 +20,17 @@ import { format } from 'date-fns'
 import { useRouter } from 'next/navigation'
 import getCookie from '@/app/actions/get-cookie-action'
 import logout from '@/app/actions/clear-cookies-action'
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog"
 
 type Props = {}
 
@@ -129,7 +140,6 @@ const Header = (props: Props) => {
             const errorData = await response.json().catch(() => null)
             throw new Error(errorData?.erro || `Erro: Ocorreu um erro ao enviar seu projeto!`)
         }
-        
 
         if(response.status == 201){
             router.refresh();
@@ -310,51 +320,6 @@ const Header = (props: Props) => {
                             </Card>
                         </PopoverContent>
                     </Popover>
-                )}
-
-                {userType == '' || userType !== 'EMPRESARIO' ? ('') : (
-                    <Sheet>
-            <SheetTrigger asChild>
-              <Button variant="ghost" size="icon" className="text-white hover:bg-black/20">
-                <Plus color={theme.theme === 'light' ? 'black' : 'white'} style={{ height: '30px', width: '30px' }} />
-                <span className="sr-only">Add new</span>
-              </Button>
-            </SheetTrigger>
-
-            <SheetContent
-              className="fixed top-1/2 left-1/2 w-full max-w-lg -translate-x-1/2 -translate-y-1/2 rounded-lg border bg-background p-6 shadow-lg z-50 transition-none"
-            >
-              <SheetHeader>
-                <SheetTitle>Criar Projeto</SheetTitle>
-                <SheetDescription>
-                  Cadastre seu novo projeto na plataforma.
-                </SheetDescription>
-              </SheetHeader>
-
-              <div className="space-y-4 pt-4">
-                <div>
-                  <Label>Título do Projeto</Label>
-                  <Input placeholder="Título" onChange={onChangeTitulo} />
-                </div>
-
-                <DatePicker label="Data Prevista de Início" setDate={setDateInicio} />
-                <DatePicker label="Data Prevista de Entrega" setDate={setDateEntrega} />
-
-                <div>
-                  <Label>Fale sobre o projeto</Label>
-                  <Textarea placeholder="Adicione uma descrição" onChange={onChangeDescricao} />
-                </div>
-              </div>
-
-              <SheetFooter className="pt-6">
-                <SheetClose asChild>
-                  <Button type="submit" variant="default" onClick={handlePostProjeto}>
-                    Enviar Projeto
-                  </Button>
-                </SheetClose>
-              </SheetFooter>
-            </SheetContent>
-          </Sheet>
                 )}
             </div>
         </header>
