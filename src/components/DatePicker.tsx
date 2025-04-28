@@ -1,8 +1,6 @@
 "use client"
 
 import React from 'react';
-import { Label } from './ui/label';
-import { Popover, PopoverContent, PopoverTrigger } from './ui/popover';
 import { Button } from './ui/button';
 import { CalendarIcon } from 'lucide-react';
 import { Calendar } from './ui/calendar';
@@ -16,39 +14,41 @@ type Props = {
 };
 
 const DatePicker = (props: Props) => {
-
     const [date, setDate] = React.useState<Date>();
+    const [showCalendar, setShowCalendar] = React.useState(false);
 
-    const addDate = (datePicker: any) => {
-        setDate(datePicker)
-        props.setDate(datePicker)
-    }
+    const handleSelect = (selectedDate: Date | undefined) => {
+        setDate(selectedDate);
+        props.setDate(selectedDate);
+        setShowCalendar(false);
+    };
 
     return (
-        <div>
-            <Label className='mb-4'>{props.label}</Label>
-            <Popover>
-                <PopoverTrigger asChild>
-                    <Button
-                        variant={"outline"}
-                        className={cn(
-                            "w-full justify-start text-left font-normal",
-                            !date && "text-muted-foreground "
-                        )}
-                    >
-                        <CalendarIcon className="mr-2 h-4 w-4" />
-                        {date ? format(date, "dd/MM/yyyy") : <span>Selecione a data</span>}
-                    </Button>
-                </PopoverTrigger>
-                <PopoverContent className="w-auto p-0">
+        <div className="relative">
+            <Button
+                variant={"outline"}
+                className={cn(
+                    "w-full justify-start text-left font-normal",
+                    !date && "text-muted-foreground"
+                )}
+                onClick={() => setShowCalendar(!showCalendar)}
+            >
+                <CalendarIcon className="mr-2 h-4 w-4" />
+                {date ? format(date, "dd/MM/yyyy") : <span>Selecione a data</span>}
+            </Button>
+            
+            {showCalendar && (
+                <div className="absolute z-[200] mt-2 bg-background border rounded-md shadow-lg">
                     <Calendar
                         locale={ptBR}
                         mode="single"
                         selected={date}
-                        onSelect={addDate}
+                        onSelect={handleSelect}
+                        initialFocus
+                        className="rounded-md"
                     />
-                </PopoverContent>
-            </Popover>
+                </div>
+            )}
         </div>
     );
 };

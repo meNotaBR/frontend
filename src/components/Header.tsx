@@ -20,6 +20,17 @@ import { format } from 'date-fns'
 import { useRouter } from 'next/navigation'
 import getCookie from '@/app/actions/get-cookie-action'
 import logout from '@/app/actions/clear-cookies-action'
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog"
 
 type Props = {}
 
@@ -309,47 +320,6 @@ const Header = (props: Props) => {
                             </Card>
                         </PopoverContent>
                     </Popover>
-                )}
-
-                {userType == '' || userType !== 'EMPRESARIO' ? ('') : (
-
-                    <Sheet>
-                        <SheetTrigger asChild>
-                            <Button variant="ghost" size="icon" className="text-white hover:bg-black/20">
-                                <Plus color={theme.theme === 'light' ? 'black' : 'white'} style={{ height: '30px', width: '30px' }} />
-                                <span className="sr-only">Add new</span>
-                            </Button>
-                        </SheetTrigger>
-                        <SheetContent side='right' className='container mx-auto px-4'>
-                            <SheetHeader>
-                                <SheetTitle>Criar Projeto</SheetTitle>
-                                <SheetDescription>
-                                    Cadastre seu novo projeto na plataforma.
-                                </SheetDescription>
-                            </SheetHeader>
-
-                            <Label>Título do Projeto</Label>
-                            <Input placeholder='Título' onChange={onChangeTitulo} />
-
-                            <DatePicker label='Data Prevista de Inicio' setDate={setDateInicio} />
-                            <DatePicker label='Data Prevista de Entrega' setDate={setDateEntrega} />
-
-                            <Label>Fale sobre o projeto </Label>
-                            <Textarea placeholder='Adicione uma descrição' onChange={onChangeDescricao} />
-
-                            <SheetFooter>
-                                <SheetClose asChild>
-                                    <Button
-                                        type="submit"
-                                        variant='default'
-                                        onClick={handlePostProjeto}
-                                    >
-                                        Enviar Projeto
-                                    </Button>
-                                </SheetClose>
-                            </SheetFooter>
-                        </SheetContent>
-                    </Sheet>
                 )}
             </div>
         </header>
