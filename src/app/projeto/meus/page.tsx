@@ -7,18 +7,6 @@ import { Label } from '@/components/ui/label';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { Plus } from 'lucide-react';
 import React, { useState, useEffect } from 'react'
-import {
-    AlertDialog,
-    AlertDialogAction,
-    AlertDialogCancel,
-    AlertDialogContent,
-    AlertDialogDescription,
-    AlertDialogFooter,
-    AlertDialogHeader,
-    AlertDialogTitle,
-    AlertDialogTrigger,
-} from "@/components/ui/alert-dialog"
-import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import DatePicker from '@/components/DatePicker';
@@ -26,6 +14,8 @@ import { format } from 'date-fns';
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
 import getCookie from '@/app/actions/get-cookie-action';
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { Button } from '@/components/ui/button';
 
 type Props = {}
 
@@ -36,31 +26,32 @@ const Page = (props: Props) => {
     const [descricao, setDescricao] = useState<string>('');
     const [projects, setProjects] = useState<Projeto[]>([]);
     const [token, setToken] = useState<string>('');
-    const router = useRouter();
+    const [isOpen, setIsOpen] = useState(false);
+
+    const fetchToken = async () => {
+        const token = await getCookie('token');
+        setToken(token ?? '');
+    };
+
+    const fetchProjects = async () => {
+        if (!token) return;
+        
+        const response = await fetch('http://localhost:8080/api/projeto/user', {
+            method: 'GET',
+            headers: {
+                "Authorization": `Bearer ${token}`,
+                "Content-type": "application/json"
+            }
+        });
+        const data = await response.json();
+        setProjects(data);
+    };
 
     useEffect(() => {
-        const fetchToken = async () => {
-            const token = await getCookie('token');
-            setToken(token ?? '');
-        };
-
-        const fetchProjects = async () => {
-            if (!token) return;
-            
-            const response = await fetch('http://localhost:8080/api/projeto/user', {
-                method: 'GET',
-                headers: {
-                    "Authorization": `Bearer ${token}`,
-                    "Content-type": "application/json"
-                }
-            });
-            const data = await response.json();
-            setProjects(data);
-        };
-
         fetchToken();
         fetchProjects();
-    }, [token]);
+    }, [token])
+    
 
     const onChangeDescricao = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
         event.preventDefault();
@@ -92,11 +83,7 @@ const Page = (props: Props) => {
         if (!response.ok) {
             const errorData = await response.json().catch(() => null)
             throw new Error(errorData?.erro || `Erro: Ocorreu um erro ao enviar seu projeto!`)
-        }
-
-        if(response.status == 201){
-            router.refresh();
-        }
+        }        
     }
 
     const handlePostProjeto = async (event: React.MouseEvent<HTMLButtonElement>) => {
@@ -105,7 +92,11 @@ const Page = (props: Props) => {
         try {
             toast.promise(postProjeto(), {
                 loading: "Enviando seu projeto... Por favor, aguarde",
-                success: <b>Projeto enviado com sucesso!</b>,
+                success: async () => {
+                    await fetchProjects();
+                    setIsOpen(false);                    
+                    return <b>Projeto enviado com sucesso!</b>
+                },
                 error: (error: any) => {
                     return error.message
                 },
@@ -123,8 +114,8 @@ const Page = (props: Props) => {
             <Label className='sm:text-4xl lg:text-3xl mb-4'>Seus projetos</Label>
 
             <div className='grid lg:grid-cols-3 md:grid-cols-2 gap-4'>
-                <AlertDialog>
-                    <AlertDialogTrigger asChild>
+                <Dialog open={isOpen} onOpenChange={setIsOpen}>
+                    <DialogTrigger asChild>
                         <Card className='items-center justify-center hover:border-primary/30 transition-all duration-300 max-h-[282px] cursor-pointer'>
                             <TooltipProvider>
                                 <Tooltip>
@@ -139,14 +130,14 @@ const Page = (props: Props) => {
                                 </Tooltip>
                             </TooltipProvider>
                         </Card>
-                    </AlertDialogTrigger>
-                    <AlertDialogContent className="max-w-[425px] z-[100]">
-                        <AlertDialogHeader>
-                            <AlertDialogTitle>Criar Projeto</AlertDialogTitle>
-                            <AlertDialogDescription>
+                    </DialogTrigger>
+                    <DialogContent className="max-w-[425px] z-[100]">
+                        <DialogHeader>
+                            <DialogTitle>Criar Projeto</DialogTitle>
+                            <DialogDescription>
                                 Cadastre seu novo projeto na plataforma.
-                            </AlertDialogDescription>
-                        </AlertDialogHeader>
+                            </DialogDescription>
+                        </DialogHeader>
 
                         <div className="grid gap-4 py-4">
                             <div className="grid gap-2">
@@ -170,14 +161,13 @@ const Page = (props: Props) => {
                             </div>
                         </div>
 
-                        <AlertDialogFooter>
-                            <AlertDialogCancel>Cancelar</AlertDialogCancel>
-                            <AlertDialogAction onClick={handlePostProjeto}>
+                        <DialogFooter>
+                            <Button type='submit' className='w-full' onClick={handlePostProjeto}>
                                 Enviar Projeto
-                            </AlertDialogAction>
-                        </AlertDialogFooter>
-                    </AlertDialogContent>
-                </AlertDialog>
+                            </Button>
+                        </DialogFooter>
+                    </DialogContent>
+                </Dialog>
 
                 {projects.map((projeto, index) => (
                     <ProjectCard projeto={projeto} key={index} token={token} />
