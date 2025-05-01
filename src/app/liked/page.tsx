@@ -10,7 +10,7 @@ const page = async (props: Props) => {
 
     const token = ((await cookies()).get('token'))?.value;
 
-    const json = await fetch('http://localhost:8080/api/projeto/list', {
+    const json = await fetch('http://localhost:8080/api/projeto/curtidos', {
         method: 'GET',
         headers: {
             "Authorization": `Bearer ${token}`,
