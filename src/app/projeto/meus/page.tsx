@@ -11,7 +11,6 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import DatePicker from '@/components/DatePicker';
 import { format } from 'date-fns';
-import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
 import getCookie from '@/app/actions/get-cookie-action';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
@@ -170,7 +169,7 @@ const Page = (props: Props) => {
                 </Dialog>
 
                 {projects.map((projeto, index) => (
-                    <ProjectCard projeto={projeto} key={index} token={token} />
+                    <ProjectCard isEdit projeto={projeto} key={index} token={token} />
                 ))}
             </div>
         </div>
