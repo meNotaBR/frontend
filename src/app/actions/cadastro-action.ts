@@ -11,7 +11,9 @@ interface Cadastro {
     numeroCelular: string,
     dataNasc: string,
     nomeFantasia?: string,
-    cnpj?: string
+    cnpj?: string,
+    cidade?: string,
+    estado?: string
 }
 
 export default async function cadastro(formData: FormData){
@@ -33,6 +35,8 @@ export default async function cadastro(formData: FormData){
     if(formData.get('tipoUsuario') === '2'){
         cadastro.nomeFantasia = formData.get('nomeFantasia') as string;
         cadastro.cnpj = formData.get('cnpj') as string;
+        cadastro.cidade = formData.get('cidade') as string;
+        cadastro.estado = formData.get('estado') as string;
         url = url.concat('empresario/create');
     }else{
         url = url.concat('investor/create');
@@ -47,10 +51,13 @@ export default async function cadastro(formData: FormData){
     });
 
     if(!response.ok){
-
         const message = await response.json();
-
-        throw new Error('Erro ao cadastrar usuario: ' + message)
+        
+        if (message.erro) {
+            throw new Error(message.erro);
+        } else {
+            throw new Error('Ocorreu um erro ao realizar o cadastro. Por favor, tente novamente.');
+        }
     }
 
     redirect('/login')

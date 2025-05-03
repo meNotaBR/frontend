@@ -3,5 +3,9 @@ interface Startup {
     nomeFantasia: string,
     cnpj: string,
     dataCadastro: string,
-    dataCriacao: string
+    dataCriacao: string,
+    localizacao: {
+        cidade: string,
+        estado: string
+    }
 }

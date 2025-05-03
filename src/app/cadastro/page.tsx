@@ -6,6 +6,7 @@ import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectValu
 import { useState } from "react"
 import cadastro from "../actions/cadastro-action"
 import Link from "next/link"
+import { estados, cidadesPorEstado } from "@/data/brazil-data"
 
 type Props = {}
 
@@ -36,6 +37,40 @@ const Page = (props: Props) => {
     const years = Array.from({ length: currentYear - 1949 }, (_, i) => currentYear - i)
 
     const [userType, setUserType] = useState<string>("")
+    const [estadoSelecionado, setEstadoSelecionado] = useState<string>("")
+    const [cidadesDisponiveis, setCidadesDisponiveis] = useState<string[]>([])
+    const [cpf, setCpf] = useState('')
+    const [telefone, setTelefone] = useState('')
+    const [cnpj, setCnpj] = useState('')
+
+    const handleEstadoChange = (value: string) => {
+        setEstadoSelecionado(value);
+        setCidadesDisponiveis(cidadesPorEstado[value] || []);
+    }
+
+    const formatarCPF = (value: string) => {
+        const numericValue = value.replace(/\D/g, '')
+        if (numericValue.length <= 11) {
+            return numericValue.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4')
+        }
+        return value
+    }
+
+    const formatarTelefone = (value: string) => {
+        const numericValue = value.replace(/\D/g, '')
+        if (numericValue.length <= 11) {
+            return numericValue.replace(/(\d{2})(\d{5})(\d{4})/, '($1) $2-$3')
+        }
+        return value
+    }
+
+    const formatarCNPJ = (value: string) => {
+        const numericValue = value.replace(/\D/g, '')
+        if (numericValue.length <= 14) {
+            return numericValue.replace(/(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})/, '$1.$2.$3/$4-$5')
+        }
+        return value
+    }
 
     return (
         <div className="grid min-h-svh lg:grid-cols-2">
@@ -68,14 +103,25 @@ const Page = (props: Props) => {
                             </div>
 
                             <Input required id="email" name="email" type="email" placeholder="Email" className="rounded-2xl " />
-                            <Input required id="cpf" name="cpf" type="text" placeholder="CPF" className="rounded-2xl " />
+                            
+                            <Input
+                                required
+                                id="cpf"
+                                name="cpf"
+                                value={cpf}
+                                onChange={(e) => setCpf(formatarCPF(e.target.value))}
+                                placeholder="CPF"
+                                className="rounded-2xl"
+                            />
+
                             <Input
                                 required
                                 id="contato"
                                 name="contato"
-                                type="text"
+                                value={telefone}
+                                onChange={(e) => setTelefone(formatarTelefone(e.target.value))}
                                 placeholder="Número de celular"
-                                className="rounded-2xl "
+                                className="rounded-2xl"
                             />
 
                             <div>
@@ -159,23 +205,61 @@ const Page = (props: Props) => {
                                 </SelectContent>
                             </Select>
 
-                            {userType == "2" ? (
+                            {userType === "2" && (
                                 <>
-                                    <h1 className="flex justify-center mb-5">
-                                        Dados da sua Startup
-                                    </h1>
+                                    <h1 className="flex justify-center mb-5">Dados da sua Startup</h1>
+
                                     <Input
                                         required
                                         id="nomeFantasia"
                                         name="nomeFantasia"
                                         type="text"
                                         placeholder="Nome da sua startup"
-                                        className="rounded-2xl "
+                                        className="rounded-2xl"
                                     />
-                                    <Input required id="cnpj" name="cnpj" type="text" placeholder="CNPJ" className="rounded-2xl " />
+
+                                    <Input
+                                        required
+                                        id="cnpj"
+                                        name="cnpj"
+                                        value={cnpj}
+                                        onChange={(e) => setCnpj(formatarCNPJ(e.target.value))}
+                                        placeholder="CNPJ"
+                                        className="rounded-2xl"
+                                    />
+
+                                    <Select name="estado" onValueChange={handleEstadoChange}>
+                                        <SelectTrigger className="w-full rounded-2xl">
+                                            <SelectValue placeholder="Estado" />
+                                        </SelectTrigger>
+                                        <SelectContent position="popper" className="w-[var(--radix-select-trigger-width)]">
+                                            <SelectGroup>
+                                                <SelectLabel>Estado</SelectLabel>
+                                                {estados.map((estado) => (
+                                                    <SelectItem value={estado.value} key={estado.value}>
+                                                        {estado.label}
+                                                    </SelectItem>
+                                                ))}
+                                            </SelectGroup>
+                                        </SelectContent>
+                                    </Select>
+
+                                    <Select name="cidade" disabled={!estadoSelecionado}>
+                                        <SelectTrigger className="w-full rounded-2xl">
+                                            <SelectValue placeholder="Cidade" />
+                                        </SelectTrigger>
+                                        <SelectContent position="popper" className="w-[var(--radix-select-trigger-width)]">
+                                            <SelectGroup>
+                                                <SelectLabel>Cidade</SelectLabel>
+                                                {cidadesDisponiveis.map((cidade) => (
+                                                    <SelectItem value={cidade} key={cidade}>
+                                                        {cidade}
+                                                    </SelectItem>
+                                                ))}
+                                            </SelectGroup>
+                                        </SelectContent>
+                                    </Select>
                                 </>
-                            ) : (
-                                ""
                             )}
 
                             {/* <div className="flex items-center space-x-2">
