@@ -12,6 +12,7 @@ interface Cadastro {
     dataNasc: string,
     nomeFantasia?: string,
     cnpj?: string
+    profileImage?: string
 }
 
 export default async function cadastro(formData: FormData){
@@ -33,6 +34,7 @@ export default async function cadastro(formData: FormData){
     if(formData.get('tipoUsuario') === '2'){
         cadastro.nomeFantasia = formData.get('nomeFantasia') as string;
         cadastro.cnpj = formData.get('cnpj') as string;
+        cadastro.profileImage = formData.get('profileImage') as string;
         url = url.concat('empresario/create');
     }else{
         url = url.concat('investor/create');
