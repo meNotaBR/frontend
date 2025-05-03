@@ -14,7 +14,8 @@ import { calculaTempoPostagem } from '@/hooks/calcula-tempo'
 
 type Props = {
     token?: string,
-    projeto: Projeto
+    projeto: Projeto,
+    isEdit?: boolean
 }
 
 const ProjectCard = (props: Props) => {
@@ -123,7 +124,7 @@ const ProjectCard = (props: Props) => {
                 <CardHeader className='flex'>
                     <div className="flex items-center gap-2">
                         <Avatar>
-                            <AvatarImage src="" alt="nome" />
+                            <AvatarImage src={props.projeto.startup.profileImage} alt="nome" />
                             <AvatarFallback>{props.projeto.startup.nomeFantasia.charAt(0)}</AvatarFallback>
                         </Avatar>
 
@@ -134,7 +135,7 @@ const ProjectCard = (props: Props) => {
                             <HoverCardContent className="dark:bg-black ml-2">
                                 <div className="flex justify-between space-x-4">
                                     <Avatar className=''>
-                                        <AvatarImage src="" />
+                                        <AvatarImage src={props.projeto.startup.profileImage} />
                                         <AvatarFallback>{props.projeto.startup.nomeFantasia.charAt(0)}</AvatarFallback>
                                     </Avatar>
                                     <div className="space-y-1">
@@ -176,6 +177,18 @@ const ProjectCard = (props: Props) => {
                 </CardContent>
                 <CardFooter className='flex justify-around sm:mt-4'>
 
+                {props.isEdit ? (<>
+                    <Button variant='secondary' className='rounded-2xl'>
+                        Editar
+                    </Button>
+                    <Button className=' rounded-2xl'>
+                        Adicionar Entregável
+                    </Button>
+                    <Button variant='destructive' className='rounded-2xl'> 
+                        Apagar
+                    </Button>
+                    </>) : (
+                    <>
                     {liked ? (
                         <Button disabled={!props.token} variant='secondary' className='rounded-2xl dark:bg-[#892be2] not-dark:bg-[#FF00FF]' onClick={removeUpvote}>
                             <ArrowUpFromLine /> {totalLikes}
@@ -198,6 +211,8 @@ const ProjectCard = (props: Props) => {
                         <Button variant='secondary' style={{ borderRadius: '15px', fontSize: '0.8em' }} onClick={copyUrl}>
                             <Share2 /> Compartilhar
                         </Button>)}
+                    </>
+                )}
                 </CardFooter>
             </Card>
         </div>
