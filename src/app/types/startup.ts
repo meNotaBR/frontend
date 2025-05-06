@@ -7,5 +7,6 @@ interface Startup {
     localizacao: {
         cidade: string,
         estado: string
-    }
+    },
+    profileImage: string
 }

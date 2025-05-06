@@ -14,6 +14,7 @@ interface Cadastro {
     cnpj?: string,
     cidade?: string,
     estado?: string
+    profileImage?: string
 }
 
 export default async function cadastro(formData: FormData){
@@ -37,6 +38,7 @@ export default async function cadastro(formData: FormData){
         cadastro.cnpj = formData.get('cnpj') as string;
         cadastro.cidade = formData.get('cidade') as string;
         cadastro.estado = formData.get('estado') as string;
+        cadastro.profileImage = formData.get('profileImage') as string;
         url = url.concat('empresario/create');
     }else{
         url = url.concat('investor/create');
