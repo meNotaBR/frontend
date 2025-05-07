@@ -3,10 +3,9 @@
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectValue, SelectTrigger} from "@/components/ui/select"
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import cadastro from "../actions/cadastro-action"
 import Link from "next/link"
-import { estados, cidadesPorEstado } from "@/data/brazil-data"
 
 type Props = {}
 
@@ -37,15 +36,35 @@ const Page = (props: Props) => {
     const years = Array.from({ length: currentYear - 1949 }, (_, i) => currentYear - i)
 
     const [userType, setUserType] = useState<string>("")
+    const [estados, setEstados] = useState<{ id: number, sigla: string, nome: string }[]>([])
+    const [cidades, setCidades] = useState<{ id: number, nome: string }[]>([])
     const [estadoSelecionado, setEstadoSelecionado] = useState<string>("")
-    const [cidadesDisponiveis, setCidadesDisponiveis] = useState<string[]>([])
     const [cpf, setCpf] = useState('')
     const [telefone, setTelefone] = useState('')
     const [cnpj, setCnpj] = useState('')
 
-    const handleEstadoChange = (value: string) => {
-        setEstadoSelecionado(value);
-        setCidadesDisponiveis(cidadesPorEstado[value] || []);
+    useEffect(() => {
+        const fetchEstados = async () => {
+            try {
+                const response = await fetch('https://brasilapi.com.br/api/ibge/uf/v1')
+                const data = await response.json()
+                setEstados(data)
+            } catch (error) {
+                console.error('Erro ao buscar estados:', error)
+            }
+        }
+        fetchEstados()
+    }, [])
+
+    const handleEstadoChange = async (value: string) => {
+        setEstadoSelecionado(value)
+        try {
+            const response = await fetch(`https://brasilapi.com.br/api/ibge/municipios/v1/${value}`)
+            const data = await response.json()
+            setCidades(data)
+        } catch (error) {
+            console.error('Erro ao buscar cidades:', error)
+        }
     }
 
     const formatarCPF = (value: string) => {
@@ -236,8 +255,8 @@ const Page = (props: Props) => {
                                             <SelectGroup>
                                                 <SelectLabel>Estado</SelectLabel>
                                                 {estados.map((estado) => (
-                                                    <SelectItem value={estado.value} key={estado.value}>
-                                                        {estado.label}
+                                                    <SelectItem value={estado.sigla} key={estado.id}>
+                                                        {estado.nome}
                                                     </SelectItem>
                                                 ))}
                                             </SelectGroup>
@@ -251,9 +270,9 @@ const Page = (props: Props) => {
                                         <SelectContent position="popper" className="w-[var(--radix-select-trigger-width)]">
                                             <SelectGroup>
                                                 <SelectLabel>Cidade</SelectLabel>
-                                                {cidadesDisponiveis.map((cidade) => (
-                                                    <SelectItem value={cidade} key={cidade}>
-                                                        {cidade}
+                                                {cidades.map((cidade) => (
+                                                    <SelectItem value={cidade.nome} key={cidade.id}>
+                                                        {cidade.nome}
                                                     </SelectItem>
                                                 ))}
                                             </SelectGroup>
