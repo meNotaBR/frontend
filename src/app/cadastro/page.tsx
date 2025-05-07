@@ -2,15 +2,15 @@
 
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectValue, SelectTrigger} from "@/components/ui/select"
-import { useState } from "react"
+import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectValue, SelectTrigger } from "@/components/ui/select"
+import { useCallback, useState } from "react"
 import cadastro from "../actions/cadastro-action"
 import Link from "next/link"
 
 type Props = {}
 
 const Page = (props: Props) => {
-    const days: string[] = ["01","02","03","04","05","06","07","08","09","10","11","12","13","14","15","16","17","18","19","20","21","22","23","24","25","26","27","28","29","30","31",]
+    const days: string[] = ["01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "21", "22", "23", "24", "25", "26", "27", "28", "29", "30", "31",]
 
     const months = [
         { value: "01", label: "Janeiro" },
@@ -36,6 +36,30 @@ const Page = (props: Props) => {
     const years = Array.from({ length: currentYear - 1949 }, (_, i) => currentYear - i)
 
     const [userType, setUserType] = useState<string>("")
+
+    const [imageBase64, setImageBase64] = useState<string>("")
+
+    const handleImageUpload = useCallback((files: FileList | null) => {
+        if (!files || files.length === 0) return
+
+        const file = files[0]
+        const reader = new FileReader()
+
+        reader.onload = (event) => {
+            if (event.target?.result) {
+                const base64 = event.target.result.toString()
+                console.log(base64);
+                setImageBase64(base64)
+            }
+        }
+
+        reader.onerror = (error) => {
+            console.error("Erro ao ler a imagem:", error)
+            setImageBase64("")
+        }
+
+        reader.readAsDataURL(file)
+    }, [])
 
     return (
         <div className="grid min-h-svh lg:grid-cols-2">
@@ -173,6 +197,32 @@ const Page = (props: Props) => {
                                         className="rounded-2xl "
                                     />
                                     <Input required id="cnpj" name="cnpj" type="text" placeholder="CNPJ" className="rounded-2xl " />
+                                    <div className="space-y-2">
+                                        <label className="block text-sm font-medium">
+                                            Logo da Startup
+                                        </label>
+                                        <Input
+                                            type="file"
+                                            accept="image/*"
+                                            onChange={(e) => handleImageUpload(e.target.files)}
+                                            className="rounded-2xl cursor-pointer"
+                                        />
+                                        <input
+                                            type="hidden"
+                                            name="profileImage"
+                                            value={imageBase64}
+                                        />
+                                    </div>
+
+                                    {imageBase64 && (
+                                        <div className="mt-2">
+                                            <img
+                                                src={imageBase64}
+                                                alt="Pré-visualização"
+                                                className="max-w-[200px] max-h-[200px] object-contain"
+                                            />
+                                        </div>
+                                    )}
                                 </>
                             ) : (
                                 ""
