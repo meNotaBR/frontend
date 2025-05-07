@@ -302,8 +302,6 @@ const Page = (props: Props) => {
                                             </SelectGroup>
                                         </SelectContent>
                                     </Select>
-
-                                    <Input required id="cnpj" name="cnpj" type="text" placeholder="CNPJ" className="rounded-2xl " />
                                     <div className="space-y-2">
                                         <label className="block text-sm font-medium">
                                             Logo da Startup
