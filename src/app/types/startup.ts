@@ -4,5 +4,9 @@ interface Startup {
     cnpj: string,
     dataCadastro: string,
     dataCriacao: string,
+    localizacao: {
+        cidade: string,
+        estado: string
+    },
     profileImage: string
 }

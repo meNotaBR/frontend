@@ -3,14 +3,14 @@
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectValue, SelectTrigger} from "@/components/ui/select"
-import { useState } from "react"
+import { useState, useEffect, useCallback } from "react"
 import cadastro from "../actions/cadastro-action"
 import Link from "next/link"
 
 type Props = {}
 
 const Page = (props: Props) => {
-    const days: string[] = ["01","02","03","04","05","06","07","08","09","10","11","12","13","14","15","16","17","18","19","20","21","22","23","24","25","26","27","28","29","30","31",]
+    const days: string[] = ["01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "21", "22", "23", "24", "25", "26", "27", "28", "29", "30", "31",]
 
     const months = [
         { value: "01", label: "Janeiro" },
@@ -36,6 +36,84 @@ const Page = (props: Props) => {
     const years = Array.from({ length: currentYear - 1949 }, (_, i) => currentYear - i)
 
     const [userType, setUserType] = useState<string>("")
+    const [estados, setEstados] = useState<{ id: number, sigla: string, nome: string }[]>([])
+    const [cidades, setCidades] = useState<{ id: number, nome: string }[]>([])
+    const [estadoSelecionado, setEstadoSelecionado] = useState<string>("")
+    const [cpf, setCpf] = useState('')
+    const [telefone, setTelefone] = useState('')
+    const [cnpj, setCnpj] = useState('')
+
+    useEffect(() => {
+        const fetchEstados = async () => {
+            try {
+                const response = await fetch('https://brasilapi.com.br/api/ibge/uf/v1')
+                const data = await response.json()
+                setEstados(data)
+            } catch (error) {
+                console.error('Erro ao buscar estados:', error)
+            }
+        }
+        fetchEstados()
+    }, [])
+
+    const handleEstadoChange = async (value: string) => {
+        setEstadoSelecionado(value)
+        try {
+            const response = await fetch(`https://brasilapi.com.br/api/ibge/municipios/v1/${value}`)
+            const data = await response.json()
+            setCidades(data)
+        } catch (error) {
+            console.error('Erro ao buscar cidades:', error)
+        }
+    }
+
+    const formatarCPF = (value: string) => {
+        const numericValue = value.replace(/\D/g, '')
+        if (numericValue.length <= 11) {
+            return numericValue.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4')
+        }
+        return value
+    }
+
+    const formatarTelefone = (value: string) => {
+        const numericValue = value.replace(/\D/g, '')
+        if (numericValue.length <= 11) {
+            return numericValue.replace(/(\d{2})(\d{5})(\d{4})/, '($1) $2-$3')
+        }
+        return value
+    }
+
+    const formatarCNPJ = (value: string) => {
+        const numericValue = value.replace(/\D/g, '')
+        if (numericValue.length <= 14) {
+            return numericValue.replace(/(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})/, '$1.$2.$3/$4-$5')
+        }
+        return value
+    }
+
+     const [imageBase64, setImageBase64] = useState<string>("")
+
+    const handleImageUpload = useCallback((files: FileList | null) => {
+        if (!files || files.length === 0) return
+
+        const file = files[0]
+        const reader = new FileReader()
+
+        reader.onload = (event) => {
+            if (event.target?.result) {
+                const base64 = event.target.result.toString()
+                console.log(base64);
+                setImageBase64(base64)
+            }
+        }
+
+        reader.onerror = (error) => {
+            console.error("Erro ao ler a imagem:", error)
+            setImageBase64("")
+        }
+
+        reader.readAsDataURL(file)
+    }, [])
 
     return (
         <div className="grid min-h-svh lg:grid-cols-2">
@@ -68,14 +146,25 @@ const Page = (props: Props) => {
                             </div>
 
                             <Input required id="email" name="email" type="email" placeholder="Email" className="rounded-2xl " />
-                            <Input required id="cpf" name="cpf" type="text" placeholder="CPF" className="rounded-2xl " />
+                            
+                            <Input
+                                required
+                                id="cpf"
+                                name="cpf"
+                                value={cpf}
+                                onChange={(e) => setCpf(formatarCPF(e.target.value))}
+                                placeholder="CPF"
+                                className="rounded-2xl"
+                            />
+
                             <Input
                                 required
                                 id="contato"
                                 name="contato"
-                                type="text"
+                                value={telefone}
+                                onChange={(e) => setTelefone(formatarTelefone(e.target.value))}
                                 placeholder="Número de celular"
-                                className="rounded-2xl "
+                                className="rounded-2xl"
                             />
 
                             <div>
@@ -159,23 +248,87 @@ const Page = (props: Props) => {
                                 </SelectContent>
                             </Select>
 
-                            {userType == "2" ? (
+                            {userType === "2" && (
                                 <>
-                                    <h1 className="flex justify-center mb-5">
-                                        Dados da sua Startup
-                                    </h1>
+                                    <h1 className="flex justify-center mb-5">Dados da sua Startup</h1>
+
                                     <Input
                                         required
                                         id="nomeFantasia"
                                         name="nomeFantasia"
                                         type="text"
                                         placeholder="Nome da sua startup"
-                                        className="rounded-2xl "
+                                        className="rounded-2xl"
                                     />
-                                    <Input required id="cnpj" name="cnpj" type="text" placeholder="CNPJ" className="rounded-2xl " />
+
+                                    <Input
+                                        required
+                                        id="cnpj"
+                                        name="cnpj"
+                                        value={cnpj}
+                                        onChange={(e) => setCnpj(formatarCNPJ(e.target.value))}
+                                        placeholder="CNPJ"
+                                        className="rounded-2xl"
+                                    />
+
+                                    <Select name="estado" onValueChange={handleEstadoChange}>
+                                        <SelectTrigger className="w-full rounded-2xl">
+                                            <SelectValue placeholder="Estado" />
+                                        </SelectTrigger>
+                                        <SelectContent position="popper" className="w-[var(--radix-select-trigger-width)]">
+                                            <SelectGroup>
+                                                <SelectLabel>Estado</SelectLabel>
+                                                {estados.map((estado) => (
+                                                    <SelectItem value={estado.sigla} key={estado.id}>
+                                                        {estado.nome}
+                                                    </SelectItem>
+                                                ))}
+                                            </SelectGroup>
+                                        </SelectContent>
+                                    </Select>
+
+                                    <Select name="cidade" disabled={!estadoSelecionado}>
+                                        <SelectTrigger className="w-full rounded-2xl">
+                                            <SelectValue placeholder="Cidade" />
+                                        </SelectTrigger>
+                                        <SelectContent position="popper" className="w-[var(--radix-select-trigger-width)]">
+                                            <SelectGroup>
+                                                <SelectLabel>Cidade</SelectLabel>
+                                                {cidades.map((cidade) => (
+                                                    <SelectItem value={cidade.nome} key={cidade.id}>
+                                                        {cidade.nome}
+                                                    </SelectItem>
+                                                ))}
+                                            </SelectGroup>
+                                        </SelectContent>
+                                    </Select>
+                                    <div className="space-y-2">
+                                        <label className="block text-sm font-medium">
+                                            Logo da Startup
+                                        </label>
+                                        <Input
+                                            type="file"
+                                            accept="image/*"
+                                            onChange={(e) => handleImageUpload(e.target.files)}
+                                            className="rounded-2xl cursor-pointer"
+                                        />
+                                        <input
+                                            type="hidden"
+                                            name="profileImage"
+                                            value={imageBase64}
+                                        />
+                                    </div>
+
+                                    {imageBase64 && (
+                                        <div className="mt-2">
+                                            <img
+                                                src={imageBase64}
+                                                alt="Pré-visualização"
+                                                className="max-w-[200px] max-h-[200px] object-contain"
+                                            />
+                                        </div>
+                                    )}
                                 </>
-                            ) : (
-                                ""
                             )}
 
                             {/* <div className="flex items-center space-x-2">

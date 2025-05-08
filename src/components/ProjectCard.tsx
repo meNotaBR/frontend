@@ -192,7 +192,14 @@ const ProjectCard = (props: Props) => {
                                     </Avatar>
                                     <div className="space-y-1">
                                         <h4 className="text-sm font-semibold">{props.projeto.startup.nomeFantasia}</h4>
-                                        <p className="text-sm">Criciúma, Santa Catarina</p>
+
+                                        <p className="text-sm">
+                                            {props.projeto.startup.localizacao ? 
+                                                `${props.projeto.startup.localizacao.cidade}, ${props.projeto.startup.localizacao.estado}` :
+                                                'Localização não informada'
+                                            }
+                                        </p>
+
                                         <div className="flex items-center pt-2">
                                             <CalendarDays className="mr-2 h-4 w-4 opacity-70" />
                                             <span className="text-xs text-muted-foreground">
