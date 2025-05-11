@@ -124,9 +124,6 @@ const Header = (props: Props) => {
             descricao: descricao
         }
 
-        console.log(projeto);
-
-
         const response = await fetch('http://localhost:8080/api/projeto/create', {
             method: 'POST',
             headers: {
