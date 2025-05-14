@@ -41,8 +41,9 @@ export default function Home() {
       >
         <div className="flex items-center gap-2">
           <TrendingUp className="h-6 w-6 text-primary" />
-          {/* <span className="font-bold text-xl">meNota</span> */}
-          <Link href='/feed'><img src="menota.svg" alt="" className='w-[150px] not-dark:invert not-dark:brightness-200' /></Link>
+          <Link href='/feed'>
+            <img src="/menota.svg" alt="meNota Logo" className='w-[150px] not-dark:invert not-dark:brightness-200' />
+          </Link>
         </div>
         <nav className="hidden md:flex items-center gap-8">
           <Link href="#features" className="text-sm font-medium hover:text-primary transition-colors">
@@ -214,6 +215,7 @@ export default function Home() {
                     src={startup.image || "/placeholder.svg"}
                     alt={startup.name}
                     fill
+                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                     className="object-cover transition-transform duration-500 group-hover:scale-105"
                   />
                   <div className="absolute top-3 right-3 bg-background/80 backdrop-blur-sm px-3 py-1 rounded-full text-sm font-medium flex items-center gap-1">
