@@ -1,13 +1,15 @@
-interface Projeto {
+import { Startup } from "./startup"
+
+export interface Projeto {
     id: number,
     nome: string,
+    descricao: string,
+    status: string,
+    upvotes: number,
+    startup: Startup,
     dataPrevistaInicio: string,
     dataPrevistaEntrega: string,
-    status: string,
-    descricao: string,
-    startup: Startup,
-    upvotes: number,
-    isLiked: boolean,
     dataCadastro: string,
+    isLiked: boolean,
     isPelando: boolean
 }

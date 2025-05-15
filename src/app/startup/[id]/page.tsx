@@ -1,143 +1,174 @@
-import { Metadata } from "next"
-import Link from "next/link"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { notFound } from "next/navigation"
+'use client'
+
+import { useEffect, useState } from "react"
+import { useParams } from "next/navigation"
 import { Startup } from "@/app/types/startup"
-import { Badge } from "@/components/ui/badge"
-import { ArrowLeft, Building2, MapPin, CalendarDays, ThumbsUp } from "lucide-react"
+import { Projeto } from "@/app/types/projeto"
+import Header from "@/components/Header"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { Button } from "@/components/ui/button"
+import Link from "next/link"
+import { ArrowUpFromLine, CalendarDays, MapPin } from "lucide-react"
+import getCookie from '@/app/actions/get-cookie-action'
 
-export async function generateMetadata({ params }: { params: { id: string } }): Promise<Metadata> {
-  return {
-    title: "Detalhes da Startup",
-    description: "Informações detalhadas da startup e seus projetos",
+export default function StartupDetailsPage() {
+  const params = useParams()
+  const [startup, setStartup] = useState<Startup | null>(null)
+  const [projetos, setProjetos] = useState<Projeto[]>([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+  const [token, setToken] = useState<string>('')
+
+  useEffect(() => {
+    const fetchToken = async () => {
+      const token = await getCookie('token')
+      setToken(token ?? '')
+    }
+
+    fetchToken()
+  }, [])
+
+  useEffect(() => {
+    const fetchStartupAndProjects = async () => {
+      if (!token) return
+
+      try {
+        // Busca detalhe da statup
+        const startupResponse = await fetch('http://localhost:8080/api/startup/list', {
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          }
+        })
+        
+        if (!startupResponse.ok) {
+          throw new Error('Erro ao buscar detalhes da startup')
+        }
+        
+        const startups = await startupResponse.json()
+        const startupEncontrada = startups.find((s: Startup) => s.id === Number(params.id))
+        
+        if (!startupEncontrada) {
+          throw new Error('Startup não encontrada')
+        }
+        
+        setStartup(startupEncontrada)
+
+        // Busca os projeto
+        const projetosResponse = await fetch('http://localhost:8080/api/projeto/list', {
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          }
+        })
+        
+        if (!projetosResponse.ok) {
+          throw new Error('Erro ao buscar projetos')
+        }
+        
+        const projetosData = await projetosResponse.json()
+        console.log('Projetos recebidos:', projetosData) 
+        
+        // Filtrar os projetos desta startup
+        const projetosDaStartup = projetosData.filter((projeto: Projeto) => {
+          console.log('Comparando projeto:', projeto.startup.id, 'com startup:', Number(params.id)) 
+          return projeto.startup.id === Number(params.id)
+        })
+        
+        console.log('Projetos filtrados:', projetosDaStartup) 
+        setProjetos(projetosDaStartup)
+      } catch (error) {
+        console.error('Erro:', error)
+        setError('Não foi possível carregar os dados. Tente novamente mais tarde.')
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    if (token) {
+      fetchStartupAndProjects()
+    }
+  }, [params.id, token])
+
+  if (loading) {
+    return (
+      <>
+        <Header />
+        <div className="container mx-auto py-10">
+          <div className="flex justify-center items-center h-64">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+          </div>
+        </div>
+      </>
+    )
   }
-}
 
-async function getStartup(id: string): Promise<Startup> {
-  try {
-    // Buscar a startup específica
-    const startupResponse = await fetch(`http://localhost:8080/api/startup/list`, {
-      cache: 'no-store'
-    })
-    
-    if (!startupResponse.ok) {
-      notFound()
-    }
-    
-    const startups = await startupResponse.json()
-    const startup = startups.find((s: Startup) => s.id === parseInt(id))
-    
-    if (!startup) {
-      notFound()
-    }
-
-    // Buscar os projetos da startup
-    const projetosResponse = await fetch(`http://localhost:8080/api/projeto/startup/${id}`, {
-      cache: 'no-store'
-    })
-
-    if (projetosResponse.ok) {
-      const projetos = await projetosResponse.json()
-      startup.projetos = projetos
-    } else {
-      startup.projetos = []
-    }
-    
-    return startup
-  } catch (error) {
-    console.error('Erro ao buscar dados:', error)
-    notFound()
+  if (error || !startup) {
+    return (
+      <>
+        <Header />
+        <div className="container mx-auto py-10">
+          <div className="flex flex-col items-center justify-center h-64">
+            <p className="text-red-500 mb-4">{error || 'Startup não encontrada'}</p>
+            <Button onClick={() => window.location.reload()}>
+              Tentar Novamente
+            </Button>
+          </div>
+        </div>
+      </>
+    )
   }
-}
-
-export default async function StartupDetailsPage({
-  params,
-}: {
-  params: { id: string }
-}) {
-  const startup = await getStartup(params.id)
 
   return (
-    <div className="min-h-screen bg-background">
-      <div className="container mx-auto py-10">
-        <Button variant="ghost" asChild className="mb-6 hover:bg-transparent">
-          <Link href="/startup" className="flex items-center gap-2 text-muted-foreground hover:text-primary">
-            <ArrowLeft className="h-4 w-4" />
-            Voltar para Startups
-          </Link>
-        </Button>
-        
-        <div className="bg-card rounded-xl p-8 shadow-md border mb-8">
-          <div className="flex items-start justify-between">
-            <div className="space-y-4">
-              <h1 className="text-4xl font-bold">{startup.nomeFantasia}</h1>
-              <div className="flex flex-wrap gap-4">
-                <Badge variant="outline" className="flex items-center gap-2 px-3 py-1">
-                  <Building2 className="h-4 w-4" />
-                  {startup.cnpj}
-                </Badge>
+    <>
+      <Header />
+      <div className="container mx-auto px-4 py-8">
+        <div className="mb-8">
+          <div className="flex items-center gap-4 mb-6">
+            <Avatar className="h-20 w-20">
+              <AvatarImage src={startup.profileImage} alt={startup.nomeFantasia} />
+              <AvatarFallback className="text-2xl">{startup.nomeFantasia.charAt(0)}</AvatarFallback>
+            </Avatar>
+            <div>
+              <h1 className="text-3xl font-bold">{startup.nomeFantasia}</h1>
+              <div className="flex items-center gap-4 mt-2 text-muted-foreground">
                 {startup.localizacao && (
-                  <Badge variant="outline" className="flex items-center gap-2 px-3 py-1">
+                  <div className="flex items-center gap-1">
                     <MapPin className="h-4 w-4" />
-                    {startup.localizacao.cidade}, {startup.localizacao.estado}
-                  </Badge>
+                    <span>{startup.localizacao.cidade}, {startup.localizacao.estado}</span>
+                  </div>
                 )}
-                <Badge variant="outline" className="flex items-center gap-2 px-3 py-1">
+                <div className="flex items-center gap-1">
                   <CalendarDays className="h-4 w-4" />
-                  Criada em {new Date(startup.dataCriacao).toLocaleDateString('pt-BR')}
-                </Badge>
+                  <span>CNPJ: {startup.cnpj}</span>
+                </div>
               </div>
             </div>
-            {startup.profileImage && (
-              <div className="w-24 h-24 rounded-full overflow-hidden border-2 border-primary">
-                <img 
-                  src={startup.profileImage} 
-                  alt={startup.nomeFantasia}
-                  className="w-full h-full object-cover"
-                />
-              </div>
-            )}
           </div>
         </div>
 
-        <div className="space-y-6">
-          <div className="flex items-center justify-between">
-            <h2 className="text-2xl font-semibold">Projetos</h2>
-            <Button asChild>
-              <Link href={`/cadastro/projeto?startupId=${startup.id}`}>
-                Novo Projeto
-              </Link>
-            </Button>
-          </div>
-          
-          {startup.projetos && startup.projetos.length > 0 ? (
+        <div className="mb-8">
+          <h2 className="text-2xl font-bold mb-4">Projetos</h2>
+          {projetos.length === 0 ? (
+            <p className="text-muted-foreground">Nenhum projeto encontrado para esta startup.</p>
+          ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {startup.projetos.map((projeto) => (
-                <Card key={projeto.id} className="hover:shadow-lg transition-shadow duration-200">
+              {projetos.map((projeto) => (
+                <Card key={projeto.id} className="hover:border-primary/30 transition-all duration-300">
                   <CardHeader>
-                    <CardTitle className="text-xl">{projeto.nome}</CardTitle>
-                    <CardDescription className="line-clamp-2">
-                      {projeto.descricao}
-                    </CardDescription>
+                    <CardTitle>{projeto.nome}</CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <div className="space-y-4">
-                      <div className="flex items-center justify-between">
-                        <Badge 
-                          variant={projeto.status === "Em Desenvolvimento" ? "default" : "outline"}
-                          className="px-3 py-1"
-                        >
-                          {projeto.status}
-                        </Badge>
-                        <div className="flex items-center gap-1 text-muted-foreground">
-                          <ThumbsUp className="h-4 w-4" />
-                          {projeto.upvotes}
-                        </div>
+                    <p className="text-muted-foreground mb-4">{projeto.descricao}</p>
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-1 text-sm text-muted-foreground">
+                        <ArrowUpFromLine className="h-4 w-4" />
+                        <span>{projeto.upvotes}</span>
                       </div>
-                      <Button asChild className="w-full">
+                      <Button variant="outline" asChild>
                         <Link href={`/projeto/${projeto.id}`}>
-                          Ver Detalhes do Projeto
+                          Ver Detalhes
                         </Link>
                       </Button>
                     </div>
@@ -145,18 +176,9 @@ export default async function StartupDetailsPage({
                 </Card>
               ))}
             </div>
-          ) : (
-            <div className="text-center py-12 bg-card rounded-lg border">
-              <p className="text-muted-foreground mb-4">Esta startup ainda não possui projetos cadastrados.</p>
-              <Button asChild>
-                <Link href={`/cadastro/projeto?startupId=${startup.id}`}>
-                  Cadastrar Primeiro Projeto
-                </Link>
-              </Button>
-            </div>
           )}
         </div>
       </div>
-    </div>
+    </>
   )
 } 

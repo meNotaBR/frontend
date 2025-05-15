@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from 'react'
 import { Button } from './ui/button'
-import { Bell, Check, ExternalLink, FolderOpenDot, LogIn, LogOut, Menu, Newspaper, Plus, Search, Star, X } from 'lucide-react'
+import { Bell, Check, ExternalLink, FolderOpenDot, LogIn, LogOut, Menu, Newspaper, Plus, Search, Star, X, Building2 } from 'lucide-react'
 import { Sheet, SheetClose, SheetContent, SheetDescription, SheetFooter, SheetHeader, SheetTitle, SheetTrigger } from './ui/sheet'
 import { Label } from './ui/label'
 import DatePicker from './DatePicker'
@@ -206,6 +206,10 @@ const Header = (props: Props) => {
 
                         <Button variant='outline' asChild>
                             <Link href='/projeto/meus' className='flex justify-between gap-2' ><FolderOpenDot className='mt-[2px]' /> Meus projetos</Link>
+                        </Button>
+
+                        <Button variant='outline' asChild>
+                            <Link href='/startup' className='flex justify-between gap-2'><Building2 className='mt-[2px]' /> Startups</Link>
                         </Button>
 
                         {!agent ? (<div className='grid grid-cols-1 gap-4'>
