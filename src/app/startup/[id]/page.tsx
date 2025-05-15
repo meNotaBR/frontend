@@ -125,6 +125,11 @@ export default function StartupDetailsPage() {
       <Header />
       <div className="container mx-auto px-4 py-8">
         <div className="mb-8">
+          <Button variant="outline" asChild className="mb-6">
+            <Link href="/startup">
+              ← Voltar para Startups
+            </Link>
+          </Button>
           <div className="flex items-center gap-4 mb-6">
             <Avatar className="h-20 w-20">
               <AvatarImage src={startup.profileImage} alt={startup.nomeFantasia} />
