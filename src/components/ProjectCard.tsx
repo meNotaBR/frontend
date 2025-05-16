@@ -131,7 +131,7 @@ const ProjectCard = (props: Props) => {
                         <HoverCard open={openHoverCard} onOpenChange={setOpenHoverCard}>
                             <HoverCardTrigger asChild onClick={() => setOpenHoverCard(!openHoverCard)}>
                                 <Link href={`/startup/${props.projeto.startup.id}`}>
-                                    <Badge className="h-5 w-20 cursor-pointer hover:bg-primary/10">
+                                    <Badge className="h-5 w-20 cursor-pointer">
                                         {props.projeto.startup.nomeFantasia.length > 10 ? 
                                             props.projeto.startup.nomeFantasia.substring(0, 9).concat('...') : 
                                             props.projeto.startup.nomeFantasia}

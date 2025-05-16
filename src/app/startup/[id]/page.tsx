@@ -11,6 +11,7 @@ import { Button } from "@/components/ui/button"
 import Link from "next/link"
 import { ArrowUpFromLine, CalendarDays, MapPin } from "lucide-react"
 import getCookie from '@/app/actions/get-cookie-action'
+import TypingLogoAnimation from '@/app/loading'
 
 export default function StartupDetailsPage() {
   const params = useParams()
@@ -95,11 +96,7 @@ export default function StartupDetailsPage() {
     return (
       <>
         <Header />
-        <div className="container mx-auto py-10">
-          <div className="flex justify-center items-center h-64">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
-          </div>
-        </div>
+        <TypingLogoAnimation />
       </>
     )
   }
