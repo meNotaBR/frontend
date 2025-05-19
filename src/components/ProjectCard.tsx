@@ -11,7 +11,6 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from './ui/t
 import { HoverCard, HoverCardContent, HoverCardTrigger } from './ui/hover-card'
 import Link from 'next/link'
 import { calculaTempoPostagem } from '@/hooks/calcula-tempo'
-import { useRouter } from 'next/navigation'
 import {
   Dialog,
   DialogTrigger,
@@ -39,6 +38,16 @@ const ProjectCard = (props: Props) => {
     const [openDeleteModal, setOpenDeleteModal] = useState(false);
     const [baseUrl, setBaseUrl] = useState('');
     const [deletado, setDeletado] = useState(false);
+    const [editDialogOpen, setEditDialogOpen] = useState(false);
+    const [editNome, setEditNome] = useState(props.projeto.nome);
+    const [editDescricao, setEditDescricao] = useState(props.projeto.descricao);
+    const [editDataInicio, setEditDataInicio] = useState<Date | undefined>(
+    props.projeto.dataPrevistaInicio ? new Date(props.projeto.dataPrevistaInicio) : undefined
+    );
+    const [editDataEntrega, setEditDataEntrega] = useState<Date | undefined>(
+    props.projeto.dataPrevistaEntrega ? new Date(props.projeto.dataPrevistaEntrega) : undefined
+    );
+    const [projetoAtual, setProjetoAtual] = useState(props.projeto);
 
     useEffect(() => {
     if (typeof window !== 'undefined') {
@@ -51,6 +60,39 @@ const ProjectCard = (props: Props) => {
         navigator.clipboard.writeText(`${baseUrl}projeto/${props.projeto.id}`);
         sharedTrue();
     }
+
+    const updateProjeto = async () => {
+        const projetoAtualizado = {
+          nome: editNome,
+          descricao: editDescricao,
+          dataPrevistaInicio: editDataInicio?.toISOString().split('T')[0],
+          dataPrevistaEntrega: editDataEntrega?.toISOString().split('T')[0]
+        };
+      
+        const response = await fetch(`http://localhost:8080/api/projeto/update/${props.projeto.id}`, {
+          method: 'PATCH',
+          headers: {
+            'Authorization': `Bearer ${props.token}`,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(projetoAtualizado)
+        });
+      
+        if (!response.ok) {
+          throw new Error(response.statusText);
+        }
+
+        setProjetoAtual({
+            ...projetoAtual,
+            nome: editNome,
+            descricao: editDescricao,
+            dataPrevistaInicio: editDataInicio ? editDataInicio.toISOString().split('T')[0] : '',
+            dataPrevistaEntrega: editDataEntrega ? editDataEntrega.toISOString().split('T')[0] : '',
+        });
+      
+        console.log('Projeto atualizado com sucesso');
+        setEditDialogOpen(false);
+    };
 
     const sendUpvote = async () => {
         const upvote: Upvote = {
@@ -208,19 +250,72 @@ const ProjectCard = (props: Props) => {
 
                 </CardHeader>
                 <CardContent className='sm:max-h-[100px]'>
-                    <Label style={{ marginBottom: '4px' }} className='text-2xl xs:text-[20px]'>{props.projeto.nome}</Label>
-                    <Label className='mt-3'>{checkDescriptionSize(props.projeto.descricao)}</Label>
+                    <Label style={{ marginBottom: '4px' }} className='text-2xl xs:text-[20px]'>{projetoAtual.nome}</Label>
+                    <Label className='mt-3'>{checkDescriptionSize(projetoAtual.descricao)}</Label>
                 </CardContent>
                 <CardFooter className='flex justify-around sm:mt-4'>
 
                 {props.isEdit ? (<>
-                    <Button variant='secondary' className='rounded-2xl'>
-                        Editar
-                    </Button>
+                    <Dialog open={editDialogOpen} onOpenChange={setEditDialogOpen}>
+                        <DialogTrigger asChild>
+                            <Button variant='secondary' className='rounded-2xl'>
+                            Editar
+                            </Button>
+                        </DialogTrigger>
+                        <DialogContent>
+                            <DialogHeader>
+                            <DialogTitle>Editar Projeto</DialogTitle>
+                            </DialogHeader>
+
+                            <div className="grid gap-4 py-4">
+                            <div className="grid gap-2">
+                                <Label htmlFor="nome">Nome</Label>
+                                <input
+                                id="nome"
+                                value={editNome}
+                                onChange={(e) => setEditNome(e.target.value)}
+                                className="border rounded p-2"
+                                />
+                            </div>
+                            <div className="grid gap-2">
+                                <Label htmlFor="descricao">Descrição</Label>
+                                <textarea
+                                id="descricao"
+                                value={editDescricao}
+                                onChange={(e) => setEditDescricao(e.target.value)}
+                                className="border rounded p-2"
+                                />
+                            </div>
+                            <div className="grid gap-2">
+                                <Label>Data de Início</Label>
+                                <input
+                                type="date"
+                                value={editDataInicio?.toISOString().split('T')[0]}
+                                onChange={(e) => setEditDataInicio(new Date(e.target.value))}
+                                className="border rounded p-2"
+                                />
+                            </div>
+                            <div className="grid gap-2">
+                                <Label>Data de Entrega</Label>
+                                <input
+                                type="date"
+                                value={editDataEntrega?.toISOString().split('T')[0]}
+                                onChange={(e) => setEditDataEntrega(new Date(e.target.value))}
+                                className="border rounded p-2"
+                                />
+                            </div>
+                            </div>
+
+                            <DialogFooter>
+                            <Button onClick={updateProjeto}>Salvar</Button>
+                            </DialogFooter>
+                        </DialogContent>
+                    </Dialog>
+
                     <Button className='rounded-2xl'>
                         Adicionar Entregável
                     </Button>
-                    
+
                     <Dialog open={openDeleteModal} onOpenChange={setOpenDeleteModal}>
                         <DialogTrigger asChild>
                             <Button variant='destructive' className='rounded-2xl'>

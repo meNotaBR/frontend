@@ -93,6 +93,31 @@ const Page = (props: Props) => {
         return await response.json();
     }
 
+    const updateProjeto = async (id: number) => {
+        const projeto = {
+            nome: nome,
+            dataPrevistaInicio: dateInicio ? format(dateInicio, "yyyy-MM-dd") : '',
+            dataPrevistaEntrega: dateEntrega ? format(dateEntrega, "yyyy-MM-dd") : '',
+            descricao: descricao
+        };
+    
+        const response = await fetch(`http://localhost:8080/api/projeto/update/${id}`, {
+            method: 'PATCH',
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-type': 'application/json'
+            },
+            body: JSON.stringify(projeto)
+        });
+    
+        if (!response.ok) {
+            const errorData = await response.json().catch(() => null);
+            throw new Error(errorData?.erro || 'Erro ao atualizar projeto');
+        }
+    
+        return await response.json();
+    };
+
     const handlePostProjeto = async (event: React.MouseEvent<HTMLButtonElement>) => {
         event.preventDefault();
 
