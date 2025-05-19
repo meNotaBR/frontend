@@ -20,6 +20,7 @@ import {
   DialogTitle,
   DialogDescription
 } from './ui/dialog';
+import { toast } from 'sonner'
 
 type Props = {
     token?: string,
@@ -48,6 +49,15 @@ const ProjectCard = (props: Props) => {
     props.projeto.dataPrevistaEntrega ? new Date(props.projeto.dataPrevistaEntrega) : undefined
     );
     const [projetoAtual, setProjetoAtual] = useState(props.projeto);
+    const [entregavelDialogOpen, setEntregavelDialogOpen] = useState(false);
+    const [entregavelNome, setEntregavelNome] = useState('');
+    const [entregavelDescricao, setEntregavelDescricao] = useState('');
+    const [entregavelDataPrevInicio, setEntregavelDataPrevInicio] = useState<string>('');
+    const [entregavelDataPrevEntrega, setEntregavelDataPrevEntrega] = useState<string>('');
+    type Status = 'PENDENTE' | 'INICIADO' | 'ENTREGUE';
+    const [entregavelStatus, setEntregavelStatus] = useState<Status>('PENDENTE');
+    const [isSubmittingEntregavel, setIsSubmittingEntregavel] = useState(false);
+    const [errorEntregavel, setErrorEntregavel] = useState<string | null>(null);
 
     useEffect(() => {
     if (typeof window !== 'undefined') {
@@ -90,9 +100,60 @@ const ProjectCard = (props: Props) => {
             dataPrevistaEntrega: editDataEntrega ? editDataEntrega.toISOString().split('T')[0] : '',
         });
       
-        console.log('Projeto atualizado com sucesso');
+        toast.success('Projeto atualizado com sucesso!');
         setEditDialogOpen(false);
     };
+
+    const submitEntregavel = async () => {
+        if (!entregavelNome) {
+          setErrorEntregavel('Nome é obrigatório');
+          return;
+        }
+    
+        setIsSubmittingEntregavel(true);
+        setErrorEntregavel(null);
+    
+        try {
+          const payload = {
+            nome: entregavelNome,
+            descricao: entregavelDescricao,
+            dataPrevistaInicio: entregavelDataPrevInicio,
+            dataPrevistaEntrega: entregavelDataPrevEntrega,
+            status: entregavelStatus,
+            projeto: {
+              id: props.projeto.id
+            }
+          };
+    
+          const response = await fetch('http://localhost:8080/api/entregavel/create', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${props.token}`
+            },
+            body: JSON.stringify(payload)
+          });
+    
+          if (!response.ok) {
+            throw new Error('Erro ao criar entregável');
+          }
+
+          setEntregavelNome('');
+          setEntregavelDescricao('');
+          setEntregavelDataPrevInicio('');
+          setEntregavelDataPrevEntrega('');
+          setEntregavelStatus('PENDENTE');
+          setEntregavelDialogOpen(false);
+
+          toast.success('Entregável criado com sucesso!');
+
+        } catch (err: any) {
+          setErrorEntregavel(err.message || 'Erro desconhecido');
+        } finally {
+          setIsSubmittingEntregavel(false);
+        }
+      };
+    
 
     const sendUpvote = async () => {
         const upvote: Upvote = {
@@ -312,9 +373,94 @@ const ProjectCard = (props: Props) => {
                         </DialogContent>
                     </Dialog>
 
-                    <Button className='rounded-2xl'>
+                    <Button
+                        className="rounded-2xl"
+                        onClick={() => setEntregavelDialogOpen(true)}
+                        >
                         Adicionar Entregável
                     </Button>
+
+                    <Dialog open={entregavelDialogOpen} onOpenChange={setEntregavelDialogOpen}>
+                        <DialogContent>
+                            <DialogHeader>
+                            <DialogTitle>Adicionar Entregável</DialogTitle>
+                            </DialogHeader>
+
+                            <div className="grid gap-4 py-4">
+                            <div className="grid gap-2">
+                                <Label htmlFor="entregavelNome">Nome</Label>
+                                <input
+                                id="entregavelNome"
+                                type="text"
+                                value={entregavelNome}
+                                onChange={(e) => setEntregavelNome(e.target.value)}
+                                className="border rounded p-2"
+                                required
+                                />
+                            </div>
+
+                            <div className="grid gap-2">
+                                <Label htmlFor="entregavelDescricao">Descrição</Label>
+                                <textarea
+                                id="entregavelDescricao"
+                                value={entregavelDescricao}
+                                onChange={(e) => setEntregavelDescricao(e.target.value)}
+                                className="border rounded p-2"
+                                />
+                            </div>
+
+                            <div className="grid gap-2">
+                                <Label htmlFor="entregavelDataPrevInicio">Data Prevista Início</Label>
+                                <input
+                                id="entregavelDataPrevInicio"
+                                type="date"
+                                value={entregavelDataPrevInicio}
+                                onChange={(e) => setEntregavelDataPrevInicio(e.target.value)}
+                                className="border rounded p-2"
+                                />
+                            </div>
+
+                            <div className="grid gap-2">
+                                <Label htmlFor="entregavelDataPrevEntrega">Data Prevista Entrega</Label>
+                                <input
+                                id="entregavelDataPrevEntrega"
+                                type="date"
+                                value={entregavelDataPrevEntrega}
+                                onChange={(e) => setEntregavelDataPrevEntrega(e.target.value)}
+                                className="border rounded p-2"
+                                />
+                            </div>
+
+                            <div className="grid gap-2">
+                                <Label htmlFor="entregavelStatus">Status</Label>
+                                <select
+                                id="entregavelStatus"
+                                value={entregavelStatus}
+                                onChange={(e) => setEntregavelStatus(e.target.value as Status)}
+                                className="border rounded p-2"
+                                >
+                                <option value="PENDENTE">Pendente</option>
+                                <option value="EM_ANDAMENTO">Em andamento</option>
+                                <option value="CONCLUIDO">Concluído</option>
+                                </select>
+                            </div>
+
+                            {errorEntregavel && <p className="text-red-600">{errorEntregavel}</p>}
+                            </div>
+
+                            <DialogFooter>
+                            <Button variant="outline" onClick={() => setEntregavelDialogOpen(false)}>
+                                Cancelar
+                            </Button>
+                            <Button
+                                onClick={submitEntregavel}
+                                disabled={isSubmittingEntregavel}
+                            >
+                                {isSubmittingEntregavel ? 'Salvando...' : 'Salvar'}
+                            </Button>
+                            </DialogFooter>
+                        </DialogContent>
+                    </Dialog>
 
                     <Dialog open={openDeleteModal} onOpenChange={setOpenDeleteModal}>
                         <DialogTrigger asChild>
