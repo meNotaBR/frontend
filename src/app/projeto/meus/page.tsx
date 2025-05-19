@@ -32,7 +32,7 @@ const Page = (props: Props) => {
         setToken(token ?? '');
     };
 
-    const fetchProjects = async () => {
+    const fetchProjects = async (token: string) => {
         if (!token) return;
         
         const response = await fetch('http://localhost:8080/api/projeto/user', {
@@ -47,9 +47,15 @@ const Page = (props: Props) => {
     };
 
     useEffect(() => {
-        fetchToken();
-        fetchProjects();
-    }, [token])
+        const fetchTokenAndProjects = async () => {
+            const token = await getCookie('token');
+            setToken(token ?? '');
+            if(token) {
+                await fetchProjects(token);
+            }
+        }
+        fetchTokenAndProjects();
+    }, []); 
     
 
     const onChangeDescricao = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
@@ -82,7 +88,9 @@ const Page = (props: Props) => {
         if (!response.ok) {
             const errorData = await response.json().catch(() => null)
             throw new Error(errorData?.erro || `Erro: Ocorreu um erro ao enviar seu projeto!`)
-        }        
+        }
+
+        return await response.json();
     }
 
     const handlePostProjeto = async (event: React.MouseEvent<HTMLButtonElement>) => {
@@ -92,7 +100,7 @@ const Page = (props: Props) => {
             toast.promise(postProjeto(), {
                 loading: "Enviando seu projeto... Por favor, aguarde",
                 success: async () => {
-                    await fetchProjects();
+                    await fetchProjects(token);
                     setIsOpen(false);                    
                     return <b>Projeto enviado com sucesso!</b>
                 },
