@@ -6,36 +6,53 @@ import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar'
 import { Label } from './ui/label'
 import { Badge } from './ui/badge'
 import { Button } from './ui/button'
-import { ArrowUpFromLine, CalendarDays, Check, Share2 } from 'lucide-react'
+import { ArrowUpFromLine, CalendarDays, Check, Share2, Trash2 } from 'lucide-react'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from './ui/tooltip'
 import { HoverCard, HoverCardContent, HoverCardTrigger } from './ui/hover-card'
 import Link from 'next/link'
 import { calculaTempoPostagem } from '@/hooks/calcula-tempo'
+import { useRouter } from 'next/navigation'
+import {
+  Dialog,
+  DialogTrigger,
+  DialogContent,
+  DialogHeader,
+  DialogFooter,
+  DialogTitle,
+  DialogDescription
+} from './ui/dialog';
 
 type Props = {
     token?: string,
     projeto: Projeto,
-    isEdit?: boolean
+    isEdit?: boolean,
 }
 
-const ProjectCard = (props: Props) => {
 
+const ProjectCard = (props: Props) => {
     const [shared, setShared] = useState<boolean>(false);
     const [liked, setLiked] = useState<boolean>();
     const [totalLikes, setTotalLikes] = useState<number>(props.projeto.upvotes);
     const [openTooltip, setOpenTooltip] = useState(false);
     const [openHoverCard, setOpenHoverCard] = useState(false);
-    const baseUrl = `${window.location.protocol}//${window.location.host}/`;
+    const [isDeleting, setIsDeleting] = useState(false);
+    const [openDeleteModal, setOpenDeleteModal] = useState(false);
+    const [baseUrl, setBaseUrl] = useState('');
+    const [deletado, setDeletado] = useState(false);
+
+    useEffect(() => {
+    if (typeof window !== 'undefined') {
+        setBaseUrl(`${window.location.protocol}//${window.location.host}/`);
+    }
+    }, []);
 
     const copyUrl = () => {
-
-        navigator.clipboard.writeText(baseUrl.concat(`projeto/${props.projeto.id}`));
-
+        if (!baseUrl) return;
+        navigator.clipboard.writeText(`${baseUrl}projeto/${props.projeto.id}`);
         sharedTrue();
     }
 
     const sendUpvote = async () => {
-
         const upvote: Upvote = {
             projeto: {
                 id: props.projeto.id
@@ -81,22 +98,37 @@ const ProjectCard = (props: Props) => {
         unlikeProject();
     }
 
+    const deleteProjeto = async () => {
+        try {
+          setIsDeleting(true);
+          const response = await fetch(`http://localhost:8080/api/projeto/delete/${props.projeto.id}`, {
+            method: 'DELETE'
+          });
+      
+          if (!response.ok) {
+            throw new Error('Erro ao deletar o projeto');
+          }
+      
+          console.log('Projeto deletado com sucesso');
+          setDeletado(true);
+        } catch (error) {
+          console.error('Erro ao deletar o projeto:', error);
+        } finally {
+          setIsDeleting(false);
+        }
+      };
+
     const date = new Date(props.projeto.startup.dataCadastro);
 
-
     const checkDescriptionSize = (desc: string) => {
-        let description: string;
-
         if (desc.length > 225) {
-            return description = desc.substring(0, 224).concat('...');
+            return desc.substring(0, 224).concat('...');
         }
-
         return desc;
     }
 
     const sharedTrue = () => {
         setShared(true);
-
         setTimeout(() => { setShared(false) }, 2000)
     }
 
@@ -116,9 +148,10 @@ const ProjectCard = (props: Props) => {
         }
     }, [props.projeto?.isLiked]);
 
-
+    if (deletado) return <></>; 
 
     return (
+    <>
         <div>
             <Card className='hover:border-primary/30 transition-all duration-300'>
                 <CardHeader className='flex'>
@@ -184,12 +217,45 @@ const ProjectCard = (props: Props) => {
                     <Button variant='secondary' className='rounded-2xl'>
                         Editar
                     </Button>
-                    <Button className=' rounded-2xl'>
+                    <Button className='rounded-2xl'>
                         Adicionar Entregável
                     </Button>
-                    <Button variant='destructive' className='rounded-2xl'> 
-                        Apagar
-                    </Button>
+                    
+                    <Dialog open={openDeleteModal} onOpenChange={setOpenDeleteModal}>
+                        <DialogTrigger asChild>
+                            <Button variant='destructive' className='rounded-2xl'>
+                                <Trash2 className="mr-2 h-4 w-4" /> Apagar
+                            </Button>
+                        </DialogTrigger>
+                        <DialogContent>
+                            <DialogHeader>
+                                <DialogTitle>Confirmar exclusão</DialogTitle>
+                                <DialogDescription>
+                                    Tem certeza que deseja excluir o projeto "{props.projeto.nome}"? Esta ação não pode ser desfeita.
+                                </DialogDescription>
+                            </DialogHeader>
+                            <DialogFooter>
+                                <Button variant="outline" onClick={() => setOpenDeleteModal(false)}>
+                                    Cancelar
+                                </Button>
+                                <Button 
+                                    variant="destructive" 
+                                    onClick={async () => {
+                                        setIsDeleting(true);
+                                        try {
+                                            deleteProjeto();
+                                            setOpenDeleteModal(false);
+                                        } finally {
+                                            setIsDeleting(false);
+                                        }
+                                      }}
+                                    disabled={isDeleting}
+                                >
+                                    {isDeleting ? "Excluindo..." : "Confirmar Exclusão"}
+                                </Button>
+                            </DialogFooter>
+                        </DialogContent>
+                    </Dialog>
                     </>) : (
                     <>
                     {liked ? (
@@ -219,6 +285,7 @@ const ProjectCard = (props: Props) => {
                 </CardFooter>
             </Card>
         </div>
+    </>
     )
 }
 
