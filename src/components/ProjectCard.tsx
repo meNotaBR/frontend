@@ -21,6 +21,7 @@ import {
   DialogDescription
 } from './ui/dialog';
 import { toast } from 'sonner'
+import DatePicker from './DatePicker'
 
 type Props = {
     token?: string,
@@ -335,7 +336,7 @@ const ProjectCard = (props: Props) => {
                                 id="nome"
                                 value={editNome}
                                 onChange={(e) => setEditNome(e.target.value)}
-                                className="border rounded p-2"
+                                className="border rounded-2xl p-2"
                                 />
                             </div>
                             <div className="grid gap-2">
@@ -344,7 +345,7 @@ const ProjectCard = (props: Props) => {
                                 id="descricao"
                                 value={editDescricao}
                                 onChange={(e) => setEditDescricao(e.target.value)}
-                                className="border rounded p-2"
+                                className="border rounded-2xl p-2"
                                 />
                             </div>
                             <div className="grid gap-2">
@@ -353,7 +354,7 @@ const ProjectCard = (props: Props) => {
                                 type="date"
                                 value={editDataInicio?.toISOString().split('T')[0]}
                                 onChange={(e) => setEditDataInicio(new Date(e.target.value))}
-                                className="border rounded p-2"
+                                className="border rounded-2xl p-2"
                                 />
                             </div>
                             <div className="grid gap-2">
@@ -362,7 +363,7 @@ const ProjectCard = (props: Props) => {
                                 type="date"
                                 value={editDataEntrega?.toISOString().split('T')[0]}
                                 onChange={(e) => setEditDataEntrega(new Date(e.target.value))}
-                                className="border rounded p-2"
+                                className="border rounded-2xl p-2"
                                 />
                             </div>
                             </div>
@@ -394,7 +395,7 @@ const ProjectCard = (props: Props) => {
                                 type="text"
                                 value={entregavelNome}
                                 onChange={(e) => setEntregavelNome(e.target.value)}
-                                className="border rounded p-2"
+                                className="border rounded-2xl p-2"
                                 required
                                 />
                             </div>
@@ -405,30 +406,16 @@ const ProjectCard = (props: Props) => {
                                 id="entregavelDescricao"
                                 value={entregavelDescricao}
                                 onChange={(e) => setEntregavelDescricao(e.target.value)}
-                                className="border rounded p-2"
+                                className="border rounded-2xl p-2"
                                 />
                             </div>
 
                             <div className="grid gap-2">
-                                <Label htmlFor="entregavelDataPrevInicio">Data Prevista Início</Label>
-                                <input
-                                id="entregavelDataPrevInicio"
-                                type="date"
-                                value={entregavelDataPrevInicio}
-                                onChange={(e) => setEntregavelDataPrevInicio(e.target.value)}
-                                className="border rounded p-2"
-                                />
+                                <DatePicker label='Data Prevista Início' setDate={(date?: Date) => setEntregavelDataPrevInicio(date ? date.toISOString().split('T')[0] : '')}/>
                             </div>
 
                             <div className="grid gap-2">
-                                <Label htmlFor="entregavelDataPrevEntrega">Data Prevista Entrega</Label>
-                                <input
-                                id="entregavelDataPrevEntrega"
-                                type="date"
-                                value={entregavelDataPrevEntrega}
-                                onChange={(e) => setEntregavelDataPrevEntrega(e.target.value)}
-                                className="border rounded p-2"
-                                />
+                                <DatePicker label='Data Prevista Entrega' setDate={(date?: Date) => setEntregavelDataPrevEntrega(date ? date.toISOString().split('T')[0] : '')}/>
                             </div>
 
                             <div className="grid gap-2">
@@ -437,7 +424,7 @@ const ProjectCard = (props: Props) => {
                                 id="entregavelStatus"
                                 value={entregavelStatus}
                                 onChange={(e) => setEntregavelStatus(e.target.value as Status)}
-                                className="border rounded p-2"
+                                className="border rounded-2xl p-2"
                                 >
                                 <option value="PENDENTE">Pendente</option>
                                 <option value="EM_ANDAMENTO">Em andamento</option>
@@ -504,7 +491,7 @@ const ProjectCard = (props: Props) => {
                             <ArrowUpFromLine /> {totalLikes}
                         </Button>
                     ) : (
-                        <Button disabled={!props.token} variant='secondary' className='rounded-[15px]' onClick={sendUpvote}>
+                        <Button disabled={!props.token} variant='secondary' className='rounded-2xl-[15px]' onClick={sendUpvote}>
                             <ArrowUpFromLine /> {totalLikes}
                         </Button>
                     )}
