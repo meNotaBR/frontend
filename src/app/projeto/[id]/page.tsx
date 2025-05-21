@@ -40,7 +40,7 @@ const page = (props: Props) => {
   }
 
   const formatarData = (data: Date | undefined) => {
-    if (!data) return "Data não disponível"; // ou return ""
+    if (!data) return "Data não disponível"; 
     return format(data, "dd 'de' MMMM 'de' yyyy", { locale: ptBR })
   }
 
@@ -74,13 +74,13 @@ const page = (props: Props) => {
                 <div className="flex items-center gap-2">
                   <Calendar className="h-5 w-5 text-muted-foreground" />
                   <span className="text-sm">
-                    Início: <span className="font-medium">{formatarData(view?.dataInicio)}</span>
+                    Início: <span className="font-medium">{view?.dataInicio ? formatarData(view?.dataInicio) : "Projeto não Iniciado"}</span>
                   </span>
                 </div>
                 <div className="flex items-center gap-2">
                   <Calendar className="h-5 w-5 text-muted-foreground" />
                   <span className="text-sm">
-                    Entrega: <span className="font-medium">{formatarData(view?.dataEntrega)}</span>
+                    Entrega: <span className="font-medium">{view?.dataEntrega ? formatarData(view?.dataEntrega): "Projeto não Entregue"}</span>
                   </span>
                 </div>
               </div>
