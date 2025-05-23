@@ -158,6 +158,7 @@ const Page = (props: Props) => {
                                 <Label htmlFor="descricao">Fale sobre o projeto</Label>
                                 <Textarea id="descricao" placeholder='Adicione uma descrição' onChange={onChangeDescricao} />
                             </div>
+
                         </div>
 
                         <DialogFooter>
@@ -177,3 +178,4 @@ const Page = (props: Props) => {
 }
 
 export default Page
+
