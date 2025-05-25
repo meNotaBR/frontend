@@ -6,6 +6,7 @@ import { EntregavelItem } from '@/components/EntregavelCard'
 import Header from '@/components/Header'
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
 import { ChartConfig, ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart'
+import { Label } from '@/components/ui/label'
 import { format } from 'date-fns'
 import { ptBR } from 'date-fns/locale';
 import { motion } from 'framer-motion'
@@ -39,10 +40,10 @@ const page = (props: Props) => {
     setEntregaveis(view.entregaveis)
   }
 
-  const formatarData = (data: Date | undefined) => {
-    if (!data) return "Data não disponível"; 
-    return format(data, "dd 'de' MMMM 'de' yyyy", { locale: ptBR })
-  }
+const formatarData = (data: string | Date): string => {
+  if (!data) return "Sem data informada";
+  return format(data, "dd 'de' MMMM 'de' yyyy", { locale: ptBR });
+};
 
   useEffect(() => {
     if (id) {
@@ -64,28 +65,28 @@ const page = (props: Props) => {
 
       <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
         <Card className="mb-8">
-          <CardHeader>
-            <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-4">
-              <div>
-                <CardTitle className="text-2xl md:text-3xl">{view?.nome}</CardTitle>
-                <CardDescription className="mt-2 text-base max-w-[80%]">{view?.descricao}</CardDescription>
+          <CardHeader className='grid grid-cols-2 items-center'>
+            <div>
+              <CardTitle className="text-2xl md:text-3xl">{view?.nome}</CardTitle>
+            </div>
+            <div className="flex flex-col gap-2 w-[70%] justify-self-end">
+              <div className="flex items-center gap-2">
+                <Calendar className="h-5 w-5 text-muted-foreground" />
+                <span className="text-sm">
+                  Início: <span className="font-medium">{view?.dataInicio ? formatarData(view?.dataInicio) : "Projeto não Iniciado"}</span>
+                </span>
               </div>
-              <div className="flex flex-col gap-2 w-[70%]">
-                <div className="flex items-center gap-2">
-                  <Calendar className="h-5 w-5 text-muted-foreground" />
-                  <span className="text-sm">
-                    Início: <span className="font-medium">{view?.dataInicio ? formatarData(view?.dataInicio) : "Projeto não Iniciado"}</span>
-                  </span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <Calendar className="h-5 w-5 text-muted-foreground" />
-                  <span className="text-sm">
-                    Entrega: <span className="font-medium">{view?.dataEntrega ? formatarData(view?.dataEntrega): "Projeto não Entregue"}</span>
-                  </span>
-                </div>
+              <div className="flex items-center gap-2">
+                <Calendar className="h-5 w-5 text-muted-foreground" />
+                <span className="text-sm">
+                  Entrega: <span className="font-medium">{view?.dataEntrega ? formatarData(view?.dataEntrega) : "Projeto não Entregue"}</span>
+                </span>
               </div>
             </div>
           </CardHeader>
+          <CardContent>
+            <CardDescription className="mt-2 text-base ">{view?.descricao}</CardDescription>
+          </CardContent>
         </Card>
       </motion.div>
 
@@ -97,6 +98,7 @@ const page = (props: Props) => {
           </CardDescription>
         </CardHeader>
         <CardContent className="flex-grow pb-0">
+          {view?.upvotes?.length && view?.upvotes.length > 5 ? (
           <div className="h-[400px] w-full">
             <ChartContainer config={chartConfig} className="h-full w-full">
               <ResponsiveContainer width="100%" height="100%">
@@ -133,13 +135,24 @@ const page = (props: Props) => {
               </ResponsiveContainer>
             </ChartContainer>
           </div>
+          ) : (
+            <>
+    <div className="h-[400px] w-full flex items-center justify-center ">
+      <Label className="lg:text-2xl text-center ">
+        Você ainda não tem dados suficientes para ver essas informações
+      </Label>
+    </div>
+            </>
+          )}
         </CardContent>
         <CardFooter className="shrink-0 pt-2">
           <div className="flex w-full items-start gap-2 text-sm">
             <div className="grid gap-2">
+              {view?.upvotes.length && view?.upvotes.length > 5 ? (
               <div className="flex items-center gap-2 font-medium leading-none">
                 Um crescimento de {view?.taxaCrescimentoUpvotes}% <TrendingUp className="h-4 w-4" />
               </div>
+              ): "Sem dados suficientes"}
             </div>
           </div>
         </CardFooter>
