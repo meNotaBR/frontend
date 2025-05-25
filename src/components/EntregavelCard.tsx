@@ -11,7 +11,7 @@ interface EntregavelItemProps {
   entregavel: Entregavel
   index: number
   isLast: boolean
-  formatarData: (date: Date) => string
+  formatarData: (date: string) => string
 }
 
 const AnimatedLine = ({ isInView }: { isInView: boolean }) => {
@@ -93,7 +93,7 @@ export function EntregavelItem({ entregavel, index, isLast, formatarData }: Entr
                 <div className="flex items-center gap-2 text-sm text-muted-foreground">
                   <Clock className="h-4 w-4" />
                   <span>
-                    {formatarData(new Date(entregavel.dataInicio))} - {formatarData(new Date(entregavel.dataEntrega))}
+                    {formatarData(entregavel.dataInicio)} - {formatarData(entregavel.dataEntrega)}
                   </span>
                 </div>
               </div>
