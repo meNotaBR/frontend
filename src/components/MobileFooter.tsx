@@ -82,7 +82,7 @@ const MobileFooter = (props: Props) => {
                     <span className="sr-only">Search</span>
                 </Link>
 
-                <Drawer>
+                {/* <Drawer>
                     <DrawerTrigger asChild>
                         <Button variant="ghost" size="icon" className="relative">
                             <Bell color='white' className="h-5 w-5" />
@@ -155,7 +155,7 @@ const MobileFooter = (props: Props) => {
                             </DrawerClose>
                         </DrawerFooter>
                     </DrawerContent>
-                </Drawer>
+                </Drawer> */}
                 <Link href="/liked" className="flex items-center justify-center text-gray-400 hover:text-gray-300">
                     <Star color={pathname === "/liked" ? '#892be2' : "white"} className="h-5 w-5" />
                     <span className="sr-only">Bookmarks</span>
