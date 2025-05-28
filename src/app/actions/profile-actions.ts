@@ -1,7 +1,6 @@
 'use server'
 
 import { cookies } from "next/headers";
-import UserProfile from "../types/user-profile";
 import { format, parseISO } from "date-fns";
 
 export async function getProfile() {
@@ -38,7 +37,6 @@ export async function updateProfile(formData: FormData) {
         throw new Error('Não autorizado');
     }
 
-    // Formatar a data para o formato esperado pelo backend (LocalDate)
     const dataNascForm = formData.get('dataNasc') as string;
     const dataNascFormatted = format(parseISO(dataNascForm), 'yyyy-MM-dd');
 
@@ -46,7 +44,7 @@ export async function updateProfile(formData: FormData) {
         nome: formData.get('nome'),
         sobrenome: formData.get('sobrenome'),
         email: formData.get('email'),
-        numeroCelular: formData.get('numeroCelular')?.toString().replace(/\D/g, ''), // Remove formatação do telefone
+        numeroCelular: formData.get('numeroCelular')?.toString().replace(/\D/g, ''),
         dataNasc: dataNascFormatted
     };
 

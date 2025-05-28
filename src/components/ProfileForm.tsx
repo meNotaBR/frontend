@@ -8,6 +8,9 @@ import { cn } from "@/lib/utils"
 import { format, isAfter, isBefore, parseISO, subYears } from "date-fns"
 import { toast } from "sonner"
 import UserProfile from "@/app/types/user-profile"
+import DatePicker from "./DatePicker"
+
+type ProfileFormData = Pick<UserProfile, 'nome' | 'sobrenome' | 'dataNasc' | 'email' | 'numeroCelular'>;
 
 interface ProfileFormProps extends Omit<React.ComponentPropsWithoutRef<"form">, 'onSubmit'> {
   initialData?: UserProfile;
@@ -20,7 +23,7 @@ export function ProfileForm({
   onSubmit,
   ...props
 }: ProfileFormProps) {
-  const [formData, setFormData] = useState<UserProfile>({
+  const [formData, setFormData] = useState<ProfileFormData>({
     nome: '',
     sobrenome: '',
     dataNasc: '',
@@ -30,7 +33,11 @@ export function ProfileForm({
 
   useEffect(() => {
     if (initialData) {
-      setFormData(initialData);
+      const formattedPhone = initialData.numeroCelular.replace(/^(\d{2})(\d{5})(\d{4})$/, '($1) $2-$3');
+      setFormData({
+        ...initialData,
+        numeroCelular: formattedPhone
+      });
     }
   }, [initialData]);
 
@@ -118,14 +125,13 @@ export function ProfileForm({
 
       <div className="grid gap-2">
         <Label htmlFor="dataNasc">Data de Nascimento</Label>
-        <Input
-          id="dataNasc"
-          type="date"
-          value={formData.dataNasc}
-          onChange={(e) => setFormData(prev => ({ ...prev, dataNasc: e.target.value }))}
-          className="rounded-md"
-          required
-          max={format(subYears(new Date(), 18), 'yyyy-MM-dd')}
+        <DatePicker
+          label="Data de Nascimento"
+          setDate={(date) => {
+            if (date) {
+              setFormData(prev => ({ ...prev, dataNasc: format(date, 'yyyy-MM-dd') }))
+            }
+          }}
         />
       </div>
 
