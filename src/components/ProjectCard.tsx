@@ -350,21 +350,11 @@ const ProjectCard = (props: Props) => {
                             </div>
                             <div className="grid gap-2">
                                 <Label>Data de Início</Label>
-                                <input
-                                type="date"
-                                value={editDataInicio?.toISOString().split('T')[0]}
-                                onChange={(e) => setEditDataInicio(new Date(e.target.value))}
-                                className="border rounded-2xl p-2"
-                                />
+                                <DatePicker label='Data de Início' setDate={(date?: Date) => setEditDataInicio(date)}/>
                             </div>
                             <div className="grid gap-2">
                                 <Label>Data de Entrega</Label>
-                                <input
-                                type="date"
-                                value={editDataEntrega?.toISOString().split('T')[0]}
-                                onChange={(e) => setEditDataEntrega(new Date(e.target.value))}
-                                className="border rounded-2xl p-2"
-                                />
+                                <DatePicker label='Data de Entrega' setDate={(date?: Date) => setEditDataEntrega(date)}/>
                             </div>
                             </div>
 
@@ -411,10 +401,12 @@ const ProjectCard = (props: Props) => {
                             </div>
 
                             <div className="grid gap-2">
+                                <label>Data Prevista Início</label>
                                 <DatePicker label='Data Prevista Início' setDate={(date?: Date) => setEntregavelDataPrevInicio(date ? date.toISOString().split('T')[0] : '')}/>
                             </div>
 
                             <div className="grid gap-2">
+                                <label>Data Prevista Entrega</label>
                                 <DatePicker label='Data Prevista Entrega' setDate={(date?: Date) => setEntregavelDataPrevEntrega(date ? date.toISOString().split('T')[0] : '')}/>
                             </div>
 
