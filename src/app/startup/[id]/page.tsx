@@ -11,95 +11,64 @@ import { Button } from "@/components/ui/button"
 import Link from "next/link"
 import { ArrowUpFromLine, CalendarDays, MapPin } from "lucide-react"
 import getCookie from '@/app/actions/get-cookie-action'
-import TypingLogoAnimation from '@/app/loading'
 
 export default function StartupDetailsPage() {
   const params = useParams()
   const [startup, setStartup] = useState<Startup | null>(null)
   const [projetos, setProjetos] = useState<Projeto[]>([])
-  const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [token, setToken] = useState<string>('')
 
-  useEffect(() => {
-    const fetchToken = async () => {
-      const token = await getCookie('token')
-      setToken(token ?? '')
-    }
+  const fetchToken = async () => {
+    const token = await getCookie('token')
+    setToken(token ?? '')
+  }
 
+  const fetchStartupAndProjects = async () => {
+    if (!token) return
+
+    try {
+      const startupResponse = await fetch(`http://localhost:8080/api/startup/${params.id}`, {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      })
+      
+      if (!startupResponse.ok) {
+        throw new Error('Erro ao buscar detalhes da startup')
+      }
+      
+      const startupData = await startupResponse.json()
+      setStartup(startupData)
+
+      const projetosResponse = await fetch(`http://localhost:8080/api/projeto/by-startup/${params.id}`, {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      })
+      
+      if (!projetosResponse.ok) {
+        throw new Error('Erro ao buscar projetos')
+      }
+      
+      const projetosData = await projetosResponse.json()
+      setProjetos(projetosData)
+    } catch (error) {
+      setError('Não foi possível carregar os dados. Tente novamente mais tarde.')
+    }
+  }
+
+  useEffect(() => {
     fetchToken()
   }, [])
 
   useEffect(() => {
-    const fetchStartupAndProjects = async () => {
-      if (!token) return
-
-      try {
-        // Busca detalhe da statup
-        const startupResponse = await fetch('http://localhost:8080/api/startup/list', {
-          headers: {
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json'
-          }
-        })
-        
-        if (!startupResponse.ok) {
-          throw new Error('Erro ao buscar detalhes da startup')
-        }
-        
-        const startups = await startupResponse.json()
-        const startupEncontrada = startups.find((s: Startup) => s.id === Number(params.id))
-        
-        if (!startupEncontrada) {
-          throw new Error('Startup não encontrada')
-        }
-        
-        setStartup(startupEncontrada)
-
-        // Busca os projeto
-        const projetosResponse = await fetch('http://localhost:8080/api/projeto/list', {
-          headers: {
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json'
-          }
-        })
-        
-        if (!projetosResponse.ok) {
-          throw new Error('Erro ao buscar projetos')
-        }
-        
-        const projetosData = await projetosResponse.json()
-        console.log('Projetos recebidos:', projetosData) 
-        
-        // Filtrar os projetos desta startup
-        const projetosDaStartup = projetosData.filter((projeto: Projeto) => {
-          console.log('Comparando projeto:', projeto.startup.id, 'com startup:', Number(params.id)) 
-          return projeto.startup.id === Number(params.id)
-        })
-        
-        console.log('Projetos filtrados:', projetosDaStartup) 
-        setProjetos(projetosDaStartup)
-      } catch (error) {
-        console.error('Erro:', error)
-        setError('Não foi possível carregar os dados. Tente novamente mais tarde.')
-      } finally {
-        setLoading(false)
-      }
-    }
-
     if (token) {
       fetchStartupAndProjects()
     }
   }, [params.id, token])
-
-  if (loading) {
-    return (
-      <>
-        <Header />
-        <TypingLogoAnimation />
-      </>
-    )
-  }
 
   if (error || !startup) {
     return (

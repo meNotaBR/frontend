@@ -6,45 +6,48 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Startup } from "@/app/types/startup"
 import Header from "@/components/Header"
+import getCookie from '@/app/actions/get-cookie-action'
 
 export default function StartupsPage() {
   const [startups, setStartups] = useState<Startup[]>([])
-  const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const [token, setToken] = useState<string>('')
+
+  const fetchToken = async () => {
+    const token = await getCookie('token')
+    setToken(token ?? '')
+  }
+
+  const fetchStartups = async () => {
+    if (!token) return
+
+    try {
+      const response = await fetch('http://localhost:8080/api/startup/list', {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      })
+      if (response.ok) {
+        const data = await response.json()
+        setStartups(data)
+      } else {
+        throw new Error('Erro ao buscar startups')
+      }
+    } catch (error) {
+      setError('Não foi possível carregar as startups. Tente novamente mais tarde.')
+    }
+  }
 
   useEffect(() => {
-    const fetchStartups = async () => {
-      try {
-        const response = await fetch('http://localhost:8080/api/startup/list')
-        if (response.ok) {
-          const data = await response.json()
-          setStartups(data)
-        } else {
-          throw new Error('Erro ao buscar startups')
-        }
-      } catch (error) {
-        console.error('Erro:', error)
-        setError('Não foi possível carregar as startups. Tente novamente mais tarde.')
-      } finally {
-        setLoading(false)
-      }
-    }
-
-    fetchStartups()
+    fetchToken()
   }, [])
 
-  if (loading) {
-    return (
-      <>
-        <Header />
-        <div className="container mx-auto py-10">
-          <div className="flex justify-center items-center h-64">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
-          </div>
-        </div>
-      </>
-    )
-  }
+  useEffect(() => {
+    if (token) {
+      fetchStartups()
+    }
+  }, [token])
 
   if (error) {
     return (
@@ -84,9 +87,6 @@ export default function StartupsPage() {
                       `${startup.localizacao.cidade}, ${startup.localizacao.estado}` :
                       'Localização não informada'
                     }
-                  </p>
-                  <p className="text-sm text-muted-foreground">
-                    Criada em: {new Date(startup.dataCriacao).toLocaleDateString('pt-BR')}
                   </p>
                 </div>
               </CardContent>
