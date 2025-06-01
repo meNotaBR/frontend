@@ -126,6 +126,7 @@ export function ProfileForm({
       <div className="grid gap-2">
         <Label htmlFor="dataNasc">Data de Nascimento</Label>
         <DatePicker
+          hasDate={new Date(formData.dataNasc)}
           label="Data de Nascimento"
           setDate={(date) => {
             if (date) {
