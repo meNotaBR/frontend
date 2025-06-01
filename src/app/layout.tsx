@@ -25,9 +25,9 @@ export const metadata: Metadata = {
 
 export default async function RootLayout({
   children,
-}: {
+}: Readonly<{
   children: React.ReactNode;
-}) {
+}>) {
   const userAgent = (await headers()).get("user-agent") || "";
   const mobileCheck = isMobile(userAgent);
   const token = await getCookie('token');
