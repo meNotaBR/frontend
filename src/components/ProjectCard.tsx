@@ -17,6 +17,7 @@ import DatePicker from './DatePicker'
 import { Textarea } from './ui/textarea'
 import { Input } from './ui/input'
 import { Select, SelectContent, SelectItem, SelectLabel, SelectGroup, SelectTrigger, SelectValue } from './ui/select'
+import { Projeto } from '@/app/types/projeto'
 
 type Props = {
     token?: string,
@@ -262,7 +263,13 @@ const ProjectCard = (props: Props) => {
 
                         <HoverCard open={openHoverCard} onOpenChange={setOpenHoverCard}>
                             <HoverCardTrigger asChild onClick={() => setOpenHoverCard(!openHoverCard)}>
-                                <Badge className="h-5 w-20">{props.projeto.startup.nomeFantasia.length > 10 ? props.projeto.startup.nomeFantasia.substring(0, 9).concat('...') : props.projeto.startup.nomeFantasia}</Badge>
+                                <Link href={`/startup/${props.projeto.startup.id}`}>
+                                    <Badge className="h-5 w-20 cursor-pointer">
+                                        {props.projeto.startup.nomeFantasia.length > 10 ? 
+                                            props.projeto.startup.nomeFantasia.substring(0, 9).concat('...') : 
+                                            props.projeto.startup.nomeFantasia}
+                                    </Badge>
+                                </Link>
                             </HoverCardTrigger>
                             <HoverCardContent className="dark:bg-black ml-2">
                                 <div className="flex justify-between space-x-4">
@@ -271,7 +278,9 @@ const ProjectCard = (props: Props) => {
                                         <AvatarFallback>{props.projeto.startup.nomeFantasia.charAt(0)}</AvatarFallback>
                                     </Avatar>
                                     <div className="space-y-1">
-                                        <h4 className="text-sm font-semibold">{props.projeto.startup.nomeFantasia}</h4>
+                                        <Link href={`/startup/${props.projeto.startup.id}`}>
+                                            <h4 className="text-sm font-semibold hover:text-primary">{props.projeto.startup.nomeFantasia}</h4>
+                                        </Link>
                                         <p className="text-sm">
                                             {props.projeto.startup.localizacao ? 
                                                 `${props.projeto.startup.localizacao.cidade}, ${props.projeto.startup.localizacao.estado}` :
