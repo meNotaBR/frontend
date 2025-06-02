@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from 'react'
 import { Button } from './ui/button'
-import { Bell, Check, ExternalLink, FolderOpenDot, LogIn, LogOut, Menu, Newspaper, Plus, Search, Star, X, Building2 } from 'lucide-react'
+import { Bell, Check, ExternalLink, FolderOpenDot, LogIn, LogOut, Menu, Newspaper, Plus, Search, Star, User X, Building2 } from 'lucide-react'
 import { Sheet, SheetClose, SheetContent, SheetDescription, SheetFooter, SheetHeader, SheetTitle, SheetTrigger } from './ui/sheet'
 import { Label } from './ui/label'
 import DatePicker from './DatePicker'
@@ -31,6 +31,10 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
+import { ProfileView } from "./ProfileView"
+import { getProfile, updateProfile } from "@/app/actions/profile-actions"
+import UserProfile from "@/app/types/user-profile"
 
 type Props = {}
 
@@ -79,6 +83,10 @@ const Header = (props: Props) => {
     const [notifications, setNotifications] = useState(initialNotifications)
     const unreadCount = notifications.filter((notification) => !notification.read).length
     const [open, setOpen] = useState(false)
+    const [profileOpen, setProfileOpen] = useState(false)
+    const [profile, setProfile] = useState<UserProfile>()
+    const [isLoadingProfile, setIsLoadingProfile] = useState(false)
+    const [profileError, setProfileError] = useState<string | null>(null)
 
     const markAllAsRead = () => {
         setNotifications(notifications.map((notification) => ({ ...notification, read: true })))
@@ -124,9 +132,6 @@ const Header = (props: Props) => {
             descricao: descricao
         }
 
-        console.log(projeto);
-
-
         const response = await fetch('http://localhost:8080/api/projeto/create', {
             method: 'POST',
             headers: {
@@ -169,18 +174,59 @@ const Header = (props: Props) => {
         setAgent(await checkAgent());
 
     const getTokenAndUserTypeCookie = async () => {
-        const userType = await getCookie('userType');
-        const token = await getCookie('token');
+        try {
+            const userType = await getCookie('userType');
+            const token = await getCookie('token');
 
-        setToken(token ?? '');
-        setUserType(userType ?? '');
+            console.log('Token obtido:', token ? 'Sim' : 'Não')
+            
+            setToken(token ?? null);
+            setUserType(userType ?? null);
+        } catch (error) {
+            console.error('Erro ao obter token:', error)
+            setToken(null)
+            setUserType(null)
+        }
     }
 
+    const loadProfile = async () => {
+        try {
+            setIsLoadingProfile(true)
+            setProfileError(null)
+            const data = await getProfile()
+            setProfile(data)
+        } catch (error) {
+            console.error('Erro ao carregar perfil:', error)
+            setProfileError(error instanceof Error ? error.message : 'Erro ao carregar perfil')
+            toast.error('Erro ao carregar perfil')
+        } finally {
+            setIsLoadingProfile(false)
+        }
+    }
+
+    const handleProfileSubmit = (formData: FormData) => {
+        toast.promise(updateProfile(formData), {
+            loading: 'Atualizando perfil...',
+            success: () => {
+                loadProfile()
+                setProfileOpen(false)
+                return 'Perfil atualizado com sucesso!'
+            },
+            error: 'Erro ao atualizar perfil'
+        })
+    }
 
     useEffect(() => {
         getTokenAndUserTypeCookie();
         checkUserAgent();
     }, [])
+
+    useEffect(() => {
+        if (token) {
+            console.log('Carregando perfil com token')
+            loadProfile()
+        }
+    }, [token])
 
     return (
         <header className="flex items-center justify-between px-4 py-3 relative" >
@@ -240,9 +286,47 @@ const Header = (props: Props) => {
                 <Link href='/feed'><img src="menota.svg" alt="" className='w-[150px] not-dark:invert not-dark:brightness-200' /></Link>
             </div>
 
-            <div className="flex items-center">
-
+            <div className="flex items-center gap-2">
                 <ModeToggle />
+
+                {token && (
+                    <Dialog open={profileOpen} onOpenChange={setProfileOpen}>
+                        <DialogTrigger asChild>
+                            <Button variant="outline" size="icon">
+                                <User className="h-5 w-5" />
+                            </Button>
+                        </DialogTrigger>
+                        <DialogContent className="sm:max-w-[425px]">
+                            <DialogHeader>
+                                <DialogTitle>Perfil do Usuário</DialogTitle>
+                                <DialogDescription>
+                                    Visualize e edite suas informações pessoais
+                                </DialogDescription>
+                            </DialogHeader>
+                            {profileError ? (
+                                <div className="flex flex-col items-center justify-center py-4 text-destructive">
+                                    <p className="text-sm">{profileError}</p>
+                                    <Button 
+                                        variant="outline" 
+                                        size="sm" 
+                                        className="mt-2"
+                                        onClick={() => {
+                                            setProfileError(null)
+                                            loadProfile()
+                                        }}
+                                    >
+                                        Tentar novamente
+                                    </Button>
+                                </div>
+                            ) : (
+                                <ProfileView 
+                                    profile={profile} 
+                                    onEdit={handleProfileSubmit}
+                                />
+                            )}
+                        </DialogContent>
+                    </Dialog>
+                )}
 
                 {agent && !token ? '' : (
                     <Popover open={open} onOpenChange={setOpen}>

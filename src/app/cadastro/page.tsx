@@ -102,7 +102,6 @@ const Page = (props: Props) => {
         reader.onload = (event) => {
             if (event.target?.result) {
                 const base64 = event.target.result.toString()
-                console.log(base64);
                 setImageBase64(base64)
             }
         }
