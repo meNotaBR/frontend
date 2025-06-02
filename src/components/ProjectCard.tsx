@@ -17,6 +17,7 @@ import DatePicker from './DatePicker'
 import { Textarea } from './ui/textarea'
 import { Input } from './ui/input'
 import { Select, SelectContent, SelectItem, SelectLabel, SelectGroup, SelectTrigger, SelectValue } from './ui/select'
+import { Projeto } from '@/app/types/projeto'
 
 type Props = {
     token?: string,
