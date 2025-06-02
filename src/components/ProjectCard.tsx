@@ -11,17 +11,12 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from './ui/t
 import { HoverCard, HoverCardContent, HoverCardTrigger } from './ui/hover-card'
 import Link from 'next/link'
 import { calculaTempoPostagem } from '@/hooks/calcula-tempo'
-import {
-  Dialog,
-  DialogTrigger,
-  DialogContent,
-  DialogHeader,
-  DialogFooter,
-  DialogTitle,
-  DialogDescription
-} from './ui/dialog';
+import { Dialog,DialogTrigger,DialogContent,DialogHeader,DialogFooter,DialogTitle,DialogDescription} from './ui/dialog';
 import { toast } from 'sonner'
 import DatePicker from './DatePicker'
+import { Textarea } from './ui/textarea'
+import { Input } from './ui/input'
+import { Select, SelectContent, SelectItem, SelectLabel, SelectGroup, SelectTrigger, SelectValue } from './ui/select'
 
 type Props = {
     token?: string,
@@ -332,7 +327,7 @@ const ProjectCard = (props: Props) => {
                             <div className="grid gap-4 py-4">
                             <div className="grid gap-2">
                                 <Label htmlFor="nome">Nome</Label>
-                                <input
+                                <Input
                                 id="nome"
                                 value={editNome}
                                 onChange={(e) => setEditNome(e.target.value)}
@@ -341,7 +336,7 @@ const ProjectCard = (props: Props) => {
                             </div>
                             <div className="grid gap-2">
                                 <Label htmlFor="descricao">Descrição</Label>
-                                <textarea
+                                <Textarea
                                 id="descricao"
                                 value={editDescricao}
                                 onChange={(e) => setEditDescricao(e.target.value)}
@@ -380,7 +375,7 @@ const ProjectCard = (props: Props) => {
                             <div className="grid gap-4 py-4">
                             <div className="grid gap-2">
                                 <Label htmlFor="entregavelNome">Nome</Label>
-                                <input
+                                <Input
                                 id="entregavelNome"
                                 type="text"
                                 value={entregavelNome}
@@ -392,7 +387,7 @@ const ProjectCard = (props: Props) => {
 
                             <div className="grid gap-2">
                                 <Label htmlFor="entregavelDescricao">Descrição</Label>
-                                <textarea
+                                <Textarea
                                 id="entregavelDescricao"
                                 value={entregavelDescricao}
                                 onChange={(e) => setEntregavelDescricao(e.target.value)}
@@ -401,27 +396,29 @@ const ProjectCard = (props: Props) => {
                             </div>
 
                             <div className="grid gap-2">
-                                <label>Data Prevista Início</label>
+                                <Label>Data Prevista Início</Label>
                                 <DatePicker label='Data Prevista Início' setDate={(date?: Date) => setEntregavelDataPrevInicio(date ? date.toISOString().split('T')[0] : '')}/>
                             </div>
 
                             <div className="grid gap-2">
-                                <label>Data Prevista Entrega</label>
+                                <Label>Data Prevista Entrega</Label>
                                 <DatePicker label='Data Prevista Entrega' setDate={(date?: Date) => setEntregavelDataPrevEntrega(date ? date.toISOString().split('T')[0] : '')}/>
                             </div>
 
                             <div className="grid gap-2">
-                                <Label htmlFor="entregavelStatus">Status</Label>
-                                <select
-                                id="entregavelStatus"
-                                value={entregavelStatus}
-                                onChange={(e) => setEntregavelStatus(e.target.value as Status)}
-                                className="border rounded-2xl p-2"
-                                >
-                                <option value="PENDENTE">Pendente</option>
-                                <option value="EM_ANDAMENTO">Em andamento</option>
-                                <option value="CONCLUIDO">Concluído</option>
-                                </select>
+                                <Label>Status do Entregável</Label>                          
+                                <Select name='entregavelStatus' onValueChange={(value) => setEntregavelStatus(value as Status)} defaultValue='PENDENTE'>
+                                    <SelectTrigger className="w-full rounded-2xl border border-gray-400">
+                                        <SelectValue placeholder="Status"/>
+                                    </SelectTrigger>
+                                    <SelectContent position="popper" className="w-[var(--radix-select-trigger-width)]">
+                                        <SelectGroup>
+                                            <SelectLabel>Status do Entregável</SelectLabel>
+                                            <SelectItem value="PENDENTE">Pendente</SelectItem>
+                                            <SelectItem value="INICIADO">Iniciado</SelectItem>
+                                        </SelectGroup>
+                                    </SelectContent>
+                                </Select>
                             </div>
 
                             {errorEntregavel && <p className="text-red-600">{errorEntregavel}</p>}
