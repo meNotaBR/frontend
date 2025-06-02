@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from 'react'
 import { Button } from './ui/button'
-import { Bell, Check, ExternalLink, FolderOpenDot, LogIn, LogOut, Menu, Newspaper, Plus, Search, Star, User X, Building2 } from 'lucide-react'
+import { Bell, Check, ExternalLink, FolderOpenDot, LogIn, LogOut, Menu, Newspaper, Plus, Search, Star, User, X, Building2 } from 'lucide-react'
 import { Sheet, SheetClose, SheetContent, SheetDescription, SheetFooter, SheetHeader, SheetTitle, SheetTrigger } from './ui/sheet'
 import { Label } from './ui/label'
 import DatePicker from './DatePicker'
