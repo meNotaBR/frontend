@@ -41,9 +41,6 @@ export default function StartupsPage() {
 
   useEffect(() => {
     fetchToken()
-  }, [])
-
-  useEffect(() => {
     if (token) {
       fetchStartups()
     }

@@ -62,9 +62,6 @@ export default function StartupDetailsPage() {
 
   useEffect(() => {
     fetchToken()
-  }, [])
-
-  useEffect(() => {
     if (token) {
       fetchStartupAndProjects()
     }
