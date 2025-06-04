@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from 'react'
 import { Button } from './ui/button'
-import { Bell, Check, ExternalLink, FolderOpenDot, LogIn, LogOut, Menu, Newspaper, Plus, Search, Star, X } from 'lucide-react'
+import { Bell, Check, ExternalLink, FolderOpenDot, LogIn, LogOut, Menu, Newspaper, Plus, Search, Star, User, X, Building2 } from 'lucide-react'
 import { Sheet, SheetClose, SheetContent, SheetDescription, SheetFooter, SheetHeader, SheetTitle, SheetTrigger } from './ui/sheet'
 import { Label } from './ui/label'
 import DatePicker from './DatePicker'
@@ -31,6 +31,10 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
+import { ProfileView } from "./ProfileView"
+import { getProfile, updateProfile } from "@/app/actions/profile-actions"
+import UserProfile from "@/app/types/user-profile"
 
 type Props = {}
 
@@ -79,6 +83,10 @@ const Header = (props: Props) => {
     const [notifications, setNotifications] = useState(initialNotifications)
     const unreadCount = notifications.filter((notification) => !notification.read).length
     const [open, setOpen] = useState(false)
+    const [profileOpen, setProfileOpen] = useState(false)
+    const [profile, setProfile] = useState<UserProfile>()
+    const [isLoadingProfile, setIsLoadingProfile] = useState(false)
+    const [profileError, setProfileError] = useState<string | null>(null)
 
     const markAllAsRead = () => {
         setNotifications(notifications.map((notification) => ({ ...notification, read: true })))
@@ -166,18 +174,59 @@ const Header = (props: Props) => {
         setAgent(await checkAgent());
 
     const getTokenAndUserTypeCookie = async () => {
-        const userType = await getCookie('userType');
-        const token = await getCookie('token');
+        try {
+            const userType = await getCookie('userType');
+            const token = await getCookie('token');
 
-        setToken(token ?? '');
-        setUserType(userType ?? '');
+            console.log('Token obtido:', token ? 'Sim' : 'Não')
+            
+            setToken(token ?? null);
+            setUserType(userType ?? null);
+        } catch (error) {
+            console.error('Erro ao obter token:', error)
+            setToken(null)
+            setUserType(null)
+        }
     }
 
+    const loadProfile = async () => {
+        try {
+            setIsLoadingProfile(true)
+            setProfileError(null)
+            const data = await getProfile()
+            setProfile(data)
+        } catch (error) {
+            console.error('Erro ao carregar perfil:', error)
+            setProfileError(error instanceof Error ? error.message : 'Erro ao carregar perfil')
+            toast.error('Erro ao carregar perfil')
+        } finally {
+            setIsLoadingProfile(false)
+        }
+    }
+
+    const handleProfileSubmit = (formData: FormData) => {
+        toast.promise(updateProfile(formData), {
+            loading: 'Atualizando perfil...',
+            success: () => {
+                loadProfile()
+                setProfileOpen(false)
+                return 'Perfil atualizado com sucesso!'
+            },
+            error: 'Erro ao atualizar perfil'
+        })
+    }
 
     useEffect(() => {
         getTokenAndUserTypeCookie();
         checkUserAgent();
     }, [])
+
+    useEffect(() => {
+        if (token) {
+            console.log('Carregando perfil com token')
+            loadProfile()
+        }
+    }, [token])
 
     return (
         <header className="flex items-center justify-between px-4 py-3 relative" >
@@ -203,6 +252,10 @@ const Header = (props: Props) => {
 
                         <Button variant='outline' asChild>
                             <Link href='/projeto/meus' className='flex justify-between gap-2' ><FolderOpenDot className='mt-[2px]' /> Meus projetos</Link>
+                        </Button>
+
+                        <Button variant='outline' asChild>
+                            <Link href='/startup' className='flex justify-between gap-2'><Building2 className='mt-[2px]' /> Startups</Link>
                         </Button>
 
                         {!agent ? (<div className='grid grid-cols-1 gap-4'>
@@ -233,91 +286,8 @@ const Header = (props: Props) => {
                 <Link href='/feed'><img src="menota.svg" alt="" className='w-[150px] not-dark:invert not-dark:brightness-200' /></Link>
             </div>
 
-            <div className="flex items-center">
-
+            <div className="flex items-center gap-2">
                 <ModeToggle />
-
-                {/* {agent && !token ? '' : (
-                    <Popover open={open} onOpenChange={setOpen}>
-                        <PopoverTrigger asChild className='ml-1'>
-                            <Button variant="outline" size="icon" className="relative">
-                                <Bell className="h-5 w-5" />
-                                {unreadCount > 0 && (
-                                    <span className="absolute -right-1 -top-1 flex h-5 w-5 items-center justify-center rounded-full bg-red-500 text-xs text-white">
-                                        {unreadCount}
-                                    </span>
-                                )}
-                            </Button>
-                        </PopoverTrigger>
-                        <PopoverContent className="w-80 p-0 md:w-96" align="end">
-                            <Card className="border-0 shadow-none">
-                                <CardHeader className="p-4 pb-2">
-                                    <div className="flex items-center justify-between">
-                                        <CardTitle className="text-lg">Notificações</CardTitle>
-                                        <CardDescription>{unreadCount} não lidas</CardDescription>
-                                    </div>
-                                </CardHeader>
-                                <ScrollArea className="h-[300px]">
-                                    {notifications.length > 0 ? (
-                                        <div className="px-4">
-                                            {notifications.map((notification) => (
-                                                <div
-                                                    key={notification.id}
-                                                    className={`border-b py-3 ${!notification.read ? "border-l-4 border-l-primary pl-3" : ""}`}
-                                                >
-                                                    <div className="flex items-start justify-between">
-                                                        <div className="flex-1">
-                                                            <div className="flex items-center justify-between">
-                                                                <h4 className="text-sm font-medium">{notification.title}</h4>
-                                                                <p className="text-xs text-muted-foreground">{notification.time}</p>
-                                                            </div>
-                                                            <p className="mt-1 text-xs">{notification.description}</p>
-                                                        </div>
-                                                        <div className="ml-2 flex flex-col space-y-1">
-                                                            {!notification.read && (
-                                                                <Button
-                                                                    variant="ghost"
-                                                                    size="icon"
-                                                                    className="h-6 w-6"
-                                                                    onClick={() => markAsRead(notification.id)}
-                                                                >
-                                                                    <Check className="h-3 w-3" />
-                                                                    <span className="sr-only">Marcar como lida</span>
-                                                                </Button>
-                                                            )}
-                                                            <Button
-                                                                variant="ghost"
-                                                                size="icon"
-                                                                className="h-6 w-6"
-                                                                onClick={() => deleteNotification(notification.id)}
-                                                            >
-                                                                <X className="h-3 w-3" />
-                                                                <span className="sr-only">Remover</span>
-                                                            </Button>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            ))}
-                                        </div>
-                                    ) : (
-                                        <div className="flex h-40 items-center justify-center">
-                                            <p className="text-sm text-muted-foreground">Nenhuma notificação disponível</p>
-                                        </div>
-                                    )}
-                                </ScrollArea>
-                                <CardFooter className="flex items-center justify-between p-4 pt-2">
-                                    <Button variant="outline" size="sm" onClick={markAllAsRead} disabled={unreadCount === 0}>
-                                        Marcar todas como lidas
-                                    </Button>
-                                    <Button variant="outline" size="sm" onClick={() => setOpen(false)} className="flex items-center gap-1">
-                                        <span>Ver todas</span>
-                                        <ExternalLink className="h-3 w-3" />
-                                    </Button>
-                                </CardFooter>
-                            </Card>
-                        </PopoverContent>
-                    </Popover>
-                )} */}
             </div>
         </header>
     )

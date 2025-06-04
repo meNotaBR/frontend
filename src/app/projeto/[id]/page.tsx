@@ -14,15 +14,31 @@ import { Calendar, TrendingUp } from 'lucide-react'
 import { useParams } from 'next/navigation'
 import React, { useEffect, useState } from 'react'
 import { Area, AreaChart, CartesianGrid, ResponsiveContainer, XAxis } from 'recharts'
+import Link from 'next/link'
+import { Button } from '@/components/ui/button'
+import { Startup } from '@/app/types/startup'
+
+interface Projeto {
+  id: number
+  nome: string
+  descricao: string
+  dataPrevistaInicio: string
+  dataPrevistaEntrega: string
+  status: string
+  upvotes: number
+  isLiked: boolean
+  dataCadastro: string
+  isPelando: boolean
+  startup: Startup
+}
+
 
 type Props = {}
 
 const page = (props: Props) => {
-
   const params = useParams();
-
   const id = params.id;
-
+  
   const [upvotes, setUpvotes] = useState<UpvoteGroupedByDate[]>([]);
   const [entregaveis, setEntregaveis] = useState<Entregavel[]>([]);
   const [view, setView] = useState<DashboardView | null>(null);
@@ -57,12 +73,9 @@ const formatarData = (data: string | Date): string => {
       color: "#892be2",
     }
   } satisfies ChartConfig
-
   return (
     <>
-
       <Header />
-
       <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
         <Card className="mb-8">
           <CardHeader className='grid grid-cols-2 items-center'>

@@ -11,6 +11,7 @@ import { ptBR } from 'date-fns/locale';
 type Props = {
     label: string;
     setDate: (date?: Date) => void;
+    hasDate?: Date
 };
 
 const DatePicker = (props: Props) => {
@@ -26,6 +27,7 @@ const DatePicker = (props: Props) => {
     return (
         <div className="relative">
             <Button
+                type='button'
                 variant={"outline"}
                 className={cn(
                     "w-full justify-start text-left font-normal",
@@ -40,6 +42,7 @@ const DatePicker = (props: Props) => {
             {showCalendar && (
                 <div className="absolute z-[200] mt-2 bg-background border rounded-md shadow-lg">
                     <Calendar
+                        defaultMonth={props.hasDate}
                         locale={ptBR}
                         mode="single"
                         selected={date}

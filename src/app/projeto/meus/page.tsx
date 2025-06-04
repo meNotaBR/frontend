@@ -32,7 +32,7 @@ const Page = (props: Props) => {
         setToken(token ?? '');
     };
 
-    const fetchProjects = async () => {
+    const fetchProjects = async (token: string) => {
         if (!token) return;
         
         const response = await fetch('http://localhost:8080/api/projeto/user', {
@@ -47,9 +47,15 @@ const Page = (props: Props) => {
     };
 
     useEffect(() => {
-        fetchToken();
-        fetchProjects();
-    }, [token])
+        const fetchTokenAndProjects = async () => {
+            const token = await getCookie('token');
+            setToken(token ?? '');
+            if(token) {
+                await fetchProjects(token);
+            }
+        }
+        fetchTokenAndProjects();
+    }, []); 
     
 
     const onChangeDescricao = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
@@ -82,8 +88,35 @@ const Page = (props: Props) => {
         if (!response.ok) {
             const errorData = await response.json().catch(() => null)
             throw new Error(errorData?.erro || `Erro: Ocorreu um erro ao enviar seu projeto!`)
-        }        
+        }
+
+        return await response.json();
     }
+
+    const updateProjeto = async (id: number) => {
+        const projeto = {
+            nome: nome,
+            dataPrevistaInicio: dateInicio ? format(dateInicio, "yyyy-MM-dd") : '',
+            dataPrevistaEntrega: dateEntrega ? format(dateEntrega, "yyyy-MM-dd") : '',
+            descricao: descricao
+        };
+    
+        const response = await fetch(`http://localhost:8080/api/projeto/update/${id}`, {
+            method: 'PATCH',
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-type': 'application/json'
+            },
+            body: JSON.stringify(projeto)
+        });
+    
+        if (!response.ok) {
+            const errorData = await response.json().catch(() => null);
+            throw new Error(errorData?.erro || 'Erro ao atualizar projeto');
+        }
+    
+        return await response.json();
+    };
 
     const handlePostProjeto = async (event: React.MouseEvent<HTMLButtonElement>) => {
         event.preventDefault();
@@ -92,7 +125,7 @@ const Page = (props: Props) => {
             toast.promise(postProjeto(), {
                 loading: "Enviando seu projeto... Por favor, aguarde",
                 success: async () => {
-                    await fetchProjects();
+                    await fetchProjects(token);
                     setIsOpen(false);                    
                     return <b>Projeto enviado com sucesso!</b>
                 },
@@ -158,6 +191,7 @@ const Page = (props: Props) => {
                                 <Label htmlFor="descricao">Fale sobre o projeto</Label>
                                 <Textarea id="descricao" placeholder='Adicione uma descrição' onChange={onChangeDescricao} />
                             </div>
+
                         </div>
 
                         <DialogFooter>
@@ -177,3 +211,4 @@ const Page = (props: Props) => {
 }
 
 export default Page
+

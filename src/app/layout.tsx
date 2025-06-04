@@ -28,17 +28,13 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-
   const userAgent = (await headers()).get("user-agent") || "";
   const mobileCheck = isMobile(userAgent);
-
   const token = await getCookie('token');
 
   return (
     <html lang="en" suppressHydrationWarning>
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased pb-16`}
-      >
+      <body className={`${geistSans.variable} ${geistMono.variable} antialiased pb-16`}>
         <ThemeProvider
           attribute="class"
           defaultTheme="system"
@@ -46,9 +42,9 @@ export default async function RootLayout({
           disableTransitionOnChange
         >
           <div className="container mx-auto px-4">{children}</div>
+          {mobileCheck && token ? (<MobileFooter/>) : ('')}
+          <Toaster theme="dark" className="flex absolute"/>
         </ThemeProvider>
-        {mobileCheck && token ? (<MobileFooter/>) : ('')}
-        <Toaster theme="dark" className="flex absolute"/>
       </body>
     </html>
   );
