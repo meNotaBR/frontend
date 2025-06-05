@@ -15,6 +15,8 @@ import { toast } from 'sonner';
 import getCookie from '@/app/actions/get-cookie-action';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
+import { Projeto } from '@/app/types/projeto';
+import getBaseUrl from '@/app/actions/get-baseurl';
 
 type Props = {}
 
@@ -35,7 +37,7 @@ const Page = (props: Props) => {
     const fetchProjects = async (token: string) => {
         if (!token) return;
         
-        const response = await fetch('http://localhost:8080/api/projeto/user', {
+        const response = await fetch(`${await getBaseUrl()}/api/projeto/user`, {
             method: 'GET',
             headers: {
                 "Authorization": `Bearer ${token}`,
@@ -76,7 +78,7 @@ const Page = (props: Props) => {
             descricao: descricao
         }
 
-        const response = await fetch('http://localhost:8080/api/projeto/create', {
+        const response = await fetch(`${process.env.BASE_URL}/api/projeto/create`, {
             method: 'POST',
             headers: {
                 'Authorization': `Bearer ${token}`,
@@ -101,7 +103,7 @@ const Page = (props: Props) => {
             descricao: descricao
         };
     
-        const response = await fetch(`http://localhost:8080/api/projeto/update/${id}`, {
+        const response = await fetch(`${process.env.BASE_URL}/api/projeto/update/${id}`, {
             method: 'PATCH',
             headers: {
                 'Authorization': `Bearer ${token}`,

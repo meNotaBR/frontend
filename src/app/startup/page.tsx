@@ -22,7 +22,7 @@ export default function StartupsPage() {
     if (!token) return
 
     try {
-      const response = await fetch('http://localhost:8080/api/startup/list', {
+      const response = await fetch(`${process.env.BASE_URL}/api/startup/list`, {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'

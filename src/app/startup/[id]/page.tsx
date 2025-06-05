@@ -28,7 +28,7 @@ export default function StartupDetailsPage() {
     if (!token) return
 
     try {
-      const startupResponse = await fetch(`http://localhost:8080/api/startup/${params.id}`, {
+      const startupResponse = await fetch(`${process.env.BASE_URL}/api/startup/${params.id}`, {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
@@ -42,7 +42,7 @@ export default function StartupDetailsPage() {
       const startupData = await startupResponse.json()
       setStartup(startupData)
 
-      const projetosResponse = await fetch(`http://localhost:8080/api/projeto/by-startup/${params.id}`, {
+      const projetosResponse = await fetch(`${process.env.BASE_URL}/api/projeto/by-startup/${params.id}`, {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'

@@ -11,7 +11,7 @@ export async function getProfile() {
     }
 
     try {
-        const response = await fetch('http://localhost:8080/api/profile', {
+        const response = await fetch(`${process.env.BASE_URL}/api/profile`, {
             headers: {
                 'Authorization': `Bearer ${token}`
             }
@@ -48,7 +48,7 @@ export async function updateProfile(formData: FormData) {
         dataNasc: dataNascFormatted
     };
 
-    const response = await fetch('http://localhost:8080/api/profile/update', {
+    const response = await fetch(`${process.env.BASE_URL}/api/profile/update`, {
         method: 'PATCH',
         headers: {
             'Authorization': `Bearer ${token}`,

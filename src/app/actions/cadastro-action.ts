@@ -31,7 +31,7 @@ export default async function cadastro(formData: FormData){
         dataNasc: dataNasc
     }    
 
-    var url = 'http://localhost:8080/api/';
+    var url = `${process.env.BASE_URL}/api/`;
 
     if(formData.get('tipoUsuario') === '2'){
         cadastro.nomeFantasia = formData.get('nomeFantasia') as string;

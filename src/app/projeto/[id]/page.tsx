@@ -14,9 +14,8 @@ import { Calendar, TrendingUp } from 'lucide-react'
 import { useParams } from 'next/navigation'
 import React, { useEffect, useState } from 'react'
 import { Area, AreaChart, CartesianGrid, ResponsiveContainer, XAxis } from 'recharts'
-import Link from 'next/link'
-import { Button } from '@/components/ui/button'
 import { Startup } from '@/app/types/startup'
+import getBaseUrl from '@/app/actions/get-baseurl'
 
 interface Projeto {
   id: number
@@ -44,7 +43,13 @@ const page = (props: Props) => {
   const [view, setView] = useState<DashboardView | null>(null);
 
   const fetchView = async () => {
-    const json = await fetch(`http://localhost:8080/api/view/${id}`);
+
+    const url = `${await getBaseUrl()}/api/view/${id}`;
+
+    console.log(url);
+    
+
+    const json = await fetch(url);
     const view: DashboardView = await json.json();
 
     view.upvotes.sort((a, b) => {
@@ -111,7 +116,7 @@ const formatarData = (data: string | Date): string => {
           </CardDescription>
         </CardHeader>
         <CardContent className="flex-grow pb-0">
-          {view?.upvotes?.length && view?.upvotes.length > 5 ? (
+          {view?.upvotes?.length && view?.upvotes.length >= 5 ? (
           <div className="h-[400px] w-full">
             <ChartContainer config={chartConfig} className="h-full w-full">
               <ResponsiveContainer width="100%" height="100%">

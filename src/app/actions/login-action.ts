@@ -8,7 +8,7 @@ export default async function login(formData: FormData) {
         senha: formData.get('password') as string
     }
 
-    const response = await fetch('http://localhost:8080/api/login', {
+    const response = await fetch(`${process.env.BASE_URL}/api/login`, {
         method: 'POST',
         headers: {
             'Content-type': 'application/json'

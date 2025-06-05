@@ -132,7 +132,7 @@ const Header = (props: Props) => {
             descricao: descricao
         }
 
-        const response = await fetch('http://localhost:8080/api/projeto/create', {
+        const response = await fetch(`${process.env.BASE_URL}/api/projeto/create`, {
             method: 'POST',
             headers: {
                 'Authorization': `Bearer ${token}`,
@@ -177,13 +177,10 @@ const Header = (props: Props) => {
         try {
             const userType = await getCookie('userType');
             const token = await getCookie('token');
-
-            console.log('Token obtido:', token ? 'Sim' : 'Não')
             
             setToken(token ?? null);
             setUserType(userType ?? null);
         } catch (error) {
-            console.error('Erro ao obter token:', error)
             setToken(null)
             setUserType(null)
         }
@@ -196,7 +193,6 @@ const Header = (props: Props) => {
             const data = await getProfile()
             setProfile(data)
         } catch (error) {
-            console.error('Erro ao carregar perfil:', error)
             setProfileError(error instanceof Error ? error.message : 'Erro ao carregar perfil')
             toast.error('Erro ao carregar perfil')
         } finally {
@@ -223,7 +219,6 @@ const Header = (props: Props) => {
 
     useEffect(() => {
         if (token) {
-            console.log('Carregando perfil com token')
             loadProfile()
         }
     }, [token])

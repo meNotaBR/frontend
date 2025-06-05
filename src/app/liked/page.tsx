@@ -3,6 +3,7 @@ import ProjectCard from '@/components/ProjectCard'
 import { Label } from '@/components/ui/label'
 import { cookies } from 'next/headers'
 import React from 'react'
+import { Projeto } from '../types/projeto'
 
 type Props = {}
 
@@ -10,7 +11,7 @@ const page = async (props: Props) => {
 
     const token = ((await cookies()).get('token'))?.value;
 
-    const json = await fetch('http://localhost:8080/api/projeto/curtidos', {
+    const json = await fetch(`${process.env.BASE_URL}/api/projeto/curtidos`, {
         method: 'GET',
         headers: {
             "Authorization": `Bearer ${token}`,

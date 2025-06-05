@@ -6,6 +6,7 @@ import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { TabsContent } from '@radix-ui/react-tabs'
 import React from 'react'
 import getCookie from '../actions/get-cookie-action'
+import { Projeto } from '../types/projeto'
 
 type Props = {}
 
@@ -24,14 +25,14 @@ const page = async (props: Props) => {
     var forYouProjects: Response
 
     if (token) {
-        forYouProjects = await fetch('http://localhost:8080/api/projeto/list', {
+        forYouProjects = await fetch(`${process.env.BASE_URL}/api/projeto/list`, {
             method: 'GET',
             headers: {
                 'Authorization': `Bearer ${token}`
             }
         })
     } else {
-        forYouProjects = await fetch('http://localhost:8080/api/projeto/list', {
+        forYouProjects = await fetch(`${process.env.BASE_URL}/api/projeto/list`, {
             method: 'GET'
         })
     }
@@ -47,14 +48,14 @@ const page = async (props: Props) => {
     var lastProjects: Response
 
     if (token) {
-        lastProjects = await fetch('http://localhost:8080/api/projeto/recentes', {
+        lastProjects = await fetch(`${process.env.BASE_URL}/api/projeto/recentes`, {
             method: 'GET',
             headers: {
                 'Authorization': `Bearer ${token}`
             }
         })
     } else {
-        lastProjects = await fetch('http://localhost:8080/api/projeto/recentes', {
+        lastProjects = await fetch(`${process.env.BASE_URL}/api/projeto/recentes`, {
             method: 'GET'
         })
     }
