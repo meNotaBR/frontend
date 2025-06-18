@@ -35,6 +35,7 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, Di
 import { ProfileView } from "./ProfileView"
 import { getProfile, updateProfile } from "@/app/actions/profile-actions"
 import UserProfile from "@/app/types/user-profile"
+import getBaseUrl from '@/app/actions/get-baseurl'
 
 type Props = {}
 
@@ -132,7 +133,7 @@ const Header = (props: Props) => {
             descricao: descricao
         }
 
-        const response = await fetch(`${process.env.BASE_URL}/api/projeto/create`, {
+        const response = await fetch(`${await getBaseUrl()}/api/projeto/create`, {
             method: 'POST',
             headers: {
                 'Authorization': `Bearer ${token}`,

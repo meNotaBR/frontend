@@ -18,6 +18,7 @@ import { Textarea } from './ui/textarea'
 import { Input } from './ui/input'
 import { Select, SelectContent, SelectItem, SelectLabel, SelectGroup, SelectTrigger, SelectValue } from './ui/select'
 import { Projeto } from '@/app/types/projeto'
+import getBaseUrl from '@/app/actions/get-baseurl'
 
 type Props = {
     token?: string,
@@ -76,7 +77,7 @@ const ProjectCard = (props: Props) => {
           dataPrevistaEntrega: editDataEntrega?.toISOString().split('T')[0]
         };
       
-        const response = await fetch(`${process.env.BASE_URL}/api/projeto/update/${props.projeto.id}`, {
+        const response = await fetch(`${await getBaseUrl()}/api/projeto/update/${props.projeto.id}`, {
           method: 'PATCH',
           headers: {
             'Authorization': `Bearer ${props.token}`,
@@ -122,7 +123,7 @@ const ProjectCard = (props: Props) => {
             }
           };
     
-          const response = await fetch(`${process.env.BASE_URL}/api/entregavel/create`, {
+          const response = await fetch(`${await getBaseUrl()}/api/entregavel/create`, {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
@@ -159,7 +160,7 @@ const ProjectCard = (props: Props) => {
             }
         }
 
-        const response = await fetch(`${process.env.BASE_URL}/api/upvote/create`, {
+        const response = await fetch(`${await getBaseUrl()}/api/upvote/create`, {
             method: 'POST',
             headers: {
                 "Content-type": "application/json",
@@ -182,7 +183,7 @@ const ProjectCard = (props: Props) => {
             }
         }
 
-        const response = await fetch(`${process.env.BASE_URL}/api/upvote/delete`, {
+        const response = await fetch(`${await getBaseUrl()}/api/upvote/delete`, {
             method: 'DELETE',
             headers: {
                 "Content-type": "application/json",
@@ -201,7 +202,7 @@ const ProjectCard = (props: Props) => {
     const deleteProjeto = async () => {
         try {
           setIsDeleting(true);
-          const response = await fetch(`${process.env.BASE_URL}/api/projeto/delete/${props.projeto.id}`, {
+          const response = await fetch(`${await getBaseUrl()}/api/projeto/delete/${props.projeto.id}`, {
             method: 'DELETE'
           });
       

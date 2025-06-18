@@ -1,6 +1,7 @@
 'use server'
 
 import { redirect } from "next/navigation";
+import getBaseUrl from "./get-baseurl";
 
 interface Cadastro {
     nome: string,
@@ -31,7 +32,7 @@ export default async function cadastro(formData: FormData){
         dataNasc: dataNasc
     }    
 
-    var url = `${process.env.BASE_URL}/api/`;
+    var url = `${await getBaseUrl()}/api/`;
 
     if(formData.get('tipoUsuario') === '2'){
         cadastro.nomeFantasia = formData.get('nomeFantasia') as string;
