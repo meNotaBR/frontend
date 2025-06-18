@@ -7,6 +7,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Startup } from "@/app/types/startup"
 import Header from "@/components/Header"
 import getCookie from '@/app/actions/get-cookie-action'
+import getBaseUrl from "../actions/get-baseurl"
 
 export default function StartupsPage() {
   const [startups, setStartups] = useState<Startup[]>([])
@@ -22,7 +23,7 @@ export default function StartupsPage() {
     if (!token) return
 
     try {
-      const response = await fetch(`${process.env.BASE_URL}/api/startup/list`, {
+      const response = await fetch(`${await getBaseUrl()}/api/startup/list`, {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'

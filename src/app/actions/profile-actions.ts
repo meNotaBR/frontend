@@ -2,6 +2,7 @@
 
 import { cookies } from "next/headers";
 import { format, parseISO } from "date-fns";
+import getBaseUrl from "./get-baseurl";
 
 export async function getProfile() {
     const token = (await cookies()).get('token')?.value;
@@ -11,7 +12,7 @@ export async function getProfile() {
     }
 
     try {
-        const response = await fetch(`${process.env.BASE_URL}/api/profile`, {
+        const response = await fetch(`${await getBaseUrl()}/api/profile`, {
             headers: {
                 'Authorization': `Bearer ${token}`
             }
@@ -48,7 +49,7 @@ export async function updateProfile(formData: FormData) {
         dataNasc: dataNascFormatted
     };
 
-    const response = await fetch(`${process.env.BASE_URL}/api/profile/update`, {
+    const response = await fetch(`${await getBaseUrl()}/api/profile/update`, {
         method: 'PATCH',
         headers: {
             'Authorization': `Bearer ${token}`,

@@ -78,7 +78,7 @@ const Page = (props: Props) => {
             descricao: descricao
         }
 
-        const response = await fetch(`${process.env.BASE_URL}/api/projeto/create`, {
+        const response = await fetch(`${await getBaseUrl()}/api/projeto/create`, {
             method: 'POST',
             headers: {
                 'Authorization': `Bearer ${token}`,
@@ -103,7 +103,7 @@ const Page = (props: Props) => {
             descricao: descricao
         };
     
-        const response = await fetch(`${process.env.BASE_URL}/api/projeto/update/${id}`, {
+        const response = await fetch(`await getBaseUrl()/api/projeto/update/${id}`, {
             method: 'PATCH',
             headers: {
                 'Authorization': `Bearer ${token}`,

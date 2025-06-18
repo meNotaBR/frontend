@@ -11,6 +11,7 @@ import { Button } from "@/components/ui/button"
 import Link from "next/link"
 import { ArrowUpFromLine, CalendarDays, MapPin } from "lucide-react"
 import getCookie from '@/app/actions/get-cookie-action'
+import getBaseUrl from "@/app/actions/get-baseurl"
 
 export default function StartupDetailsPage() {
   const params = useParams()
@@ -28,7 +29,7 @@ export default function StartupDetailsPage() {
     if (!token) return
 
     try {
-      const startupResponse = await fetch(`${process.env.BASE_URL}/api/startup/${params.id}`, {
+      const startupResponse = await fetch(`${await getBaseUrl()}/api/startup/${params.id}`, {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
@@ -42,7 +43,7 @@ export default function StartupDetailsPage() {
       const startupData = await startupResponse.json()
       setStartup(startupData)
 
-      const projetosResponse = await fetch(`${process.env.BASE_URL}/api/projeto/by-startup/${params.id}`, {
+      const projetosResponse = await fetch(`${await getBaseUrl()}/api/projeto/by-startup/${params.id}`, {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'

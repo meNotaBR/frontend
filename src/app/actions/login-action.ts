@@ -1,6 +1,7 @@
 'use server'
 
 import { cookies } from "next/headers";
+import getBaseUrl from "./get-baseurl";
 
 export default async function login(formData: FormData) {
     const user: UserLogin = {
@@ -8,7 +9,7 @@ export default async function login(formData: FormData) {
         senha: formData.get('password') as string
     }
 
-    const response = await fetch(`${process.env.BASE_URL}/api/login`, {
+    const response = await fetch(`${await getBaseUrl()}/api/login`, {
         method: 'POST',
         headers: {
             'Content-type': 'application/json'
