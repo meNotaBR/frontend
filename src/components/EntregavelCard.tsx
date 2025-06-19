@@ -29,19 +29,57 @@ export function EntregavelItem({ entregavel, index, isLast, formatarData }: Entr
   const ref = useRef(null)
   const isInView = useInView(ref, { once: true, amount: 0.3 })
 
-  const isAtrasado = (entregavel: Entregavel) => {
-    if(entregavel.status == "ENTREGUE"){
-        return false;
+  const getStatusInfo = (entregavel: Entregavel) => {
+    const hoje = new Date();
+    const previsaoEntrega = new Date(entregavel.dataPrevistaEntrega);
+    const estaAtrasado = previsaoEntrega < hoje;
+
+    if (entregavel.status === "ENTREGUE") {
+      return {
+        text: "Entregue",
+        badgeClass: "bg-green-500",
+        circleClass: "border-green-700 bg-green-300",
+        cardClass: "",
+        showWarning: false
+      };
     }
 
-    if(entregavel.status == "INICIADO"){
-        const previsaoEntrega = new Date(entregavel.dataPrevistaEntrega);
-        return previsaoEntrega < new Date
+    if (entregavel.status === "INICIADO") {
+      return estaAtrasado 
+        ? {
+            text: "Atrasado",
+            badgeClass: "bg-red-500",
+            circleClass: "border-red-500 bg-red-100",
+            cardClass: "border-red-200 shadow-[0_0_0_1px_rgba(220,38,38,0.1)]",
+            showWarning: true
+          }
+        : {
+            text: "Em produção",
+            badgeClass: "bg-purple-500",
+            circleClass: "border-purple-700 bg-purple-300",
+            cardClass: "",
+            showWarning: false
+          };
     }
+
+    return estaAtrasado 
+      ? {
+          text: "Atrasado",
+          badgeClass: "bg-red-500",
+          circleClass: "border-red-500 bg-red-100",
+          cardClass: "border-red-200 shadow-[0_0_0_1px_rgba(220,38,38,0.1)]",
+          showWarning: true
+        }
+      : {
+          text: "Pendente",
+          badgeClass: "bg-orange-400",
+          circleClass: "border-orange-500 bg-orange-300",
+          cardClass: "",
+          showWarning: false
+        };
   }
 
-  const atrasado = isAtrasado(entregavel)
-
+  const statusInfo = getStatusInfo(entregavel);
   const animationDelay = 0.3 + index * 0.4
 
   return (
@@ -56,9 +94,7 @@ export function EntregavelItem({ entregavel, index, isLast, formatarData }: Entr
         {!isLast && <AnimatedLine isInView={isInView} />}
 
         <motion.div
-          className={`relative z-10 flex items-center justify-center w-12 h-12 rounded-full border-2 dark:text-black ${
-            atrasado ? "border-red-500 bg-red-100" : "border-green-700 bg-green-300"
-          }`}
+          className={`relative z-10 flex items-center justify-center w-12 h-12 rounded-full border-2 dark:text-black ${statusInfo.circleClass}`}
           initial={{ scale: 0, opacity: 0 }}
           animate={isInView ? { scale: 1, opacity: 1 } : { scale: 0, opacity: 0 }}
           transition={{ duration: 0.4, delay: animationDelay - 0.2 }}
@@ -77,18 +113,14 @@ export function EntregavelItem({ entregavel, index, isLast, formatarData }: Entr
             stiffness: 100,
           }}
         >
-          <Card className={`h-full ${atrasado ? "border-red-200 shadow-[0_0_0_1px_rgba(220,38,38,0.1)]" : ""}`}>
+          <Card className={`h-full ${statusInfo.cardClass}`}>
             <CardHeader className="pb-2">
               <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-2">
                 <CardTitle className="text-lg">
                   {entregavel.nome}
-                  {atrasado ? (
-                    <Badge variant="destructive" className="ml-2">
-                      Atrasado
-                    </Badge>
-                  ) : (
-                    <Badge className="ml-2 bg-green-500">Entregue</Badge>
-                  )}
+                  <Badge className={`ml-2 ${statusInfo.badgeClass}`}>
+                    {statusInfo.text}
+                  </Badge>
                 </CardTitle>
                 <div className="flex items-center gap-2 text-sm text-muted-foreground">
                   <Clock className="h-4 w-4" />
@@ -102,7 +134,7 @@ export function EntregavelItem({ entregavel, index, isLast, formatarData }: Entr
             <CardContent>
               <div className="flex justify-between items-center">
                 <div className="flex items-center gap-2">
-                  {atrasado && (
+                  {statusInfo.showWarning && (
                     <TooltipProvider>
                       <Tooltip>
                         <TooltipTrigger asChild>
