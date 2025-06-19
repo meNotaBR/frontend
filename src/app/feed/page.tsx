@@ -8,6 +8,7 @@ import React from 'react'
 import getCookie from '../actions/get-cookie-action'
 import { Projeto } from '../types/projeto'
 import getBaseUrl from '../actions/get-baseurl'
+import ProjetoCarrossel from '../types/projeto-carrossel'
 
 type Props = {}
 
@@ -15,18 +16,19 @@ const page = async (props: Props) => {
 
     const token = await getCookie('token');
 
-    const projetos = [
-        { nome: "Projeto 1", img: 'https://t4.ftcdn.net/jpg/03/00/14/39/360_F_300143961_8kJTPiTbWallCIBxO0GQzoxgwE9cIRGG.jpg', descricao: "Detalhes do projeto Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s.", startup: { nome: 'empresa tal', descricao: 'descricao startup', empresario: 'nome empresario' } },
-        { nome: "Projeto 2", img: 'https://media.istockphoto.com/id/1395187689/photo/signing-contract-investor-and-contractor.jpg?s=612x612&w=0&k=20&c=SYD7JvzTDqcgz3i9eooa5PQY4650BIttb9batDCmE9Y=', descricao: "Detalhes do projeto Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s.", startup: { nome: 'empresa tal', descricao: 'descricao startup', empresario: 'nome empresario' } },
-        { nome: "Projeto 3", img: 'https://t4.ftcdn.net/jpg/03/00/14/39/360_F_300143961_8kJTPiTbWallCIBxO0GQzoxgwE9cIRGG.jpg', descricao: "Detalhes do projeto Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s.", startup: { nome: 'empresa tal', descricao: 'descricao startup', empresario: 'nome empresario' } },
-        { nome: "Projeto 4", img: 'https://t4.ftcdn.net/jpg/03/00/14/39/360_F_300143961_8kJTPiTbWallCIBxO0GQzoxgwE9cIRGG.jpg', descricao: "Detalhes do projeto Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s.", startup: { nome: 'empresa tal', descricao: 'descricao startup', empresario: 'nome empresario' } },
-        { nome: "Projeto 5", img: 'https://t4.ftcdn.net/jpg/03/00/14/39/360_F_300143961_8kJTPiTbWallCIBxO0GQzoxgwE9cIRGG.jpg', descricao: "Detalhes do projeto Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s.", startup: { nome: 'empresa tal', descricao: 'descricao startup', empresario: 'nome empresario' } },
-    ]
 
     var forYouProjects: Response
+    var carrosselProjects: Response
 
     if (token) {
         forYouProjects = await fetch(`${await getBaseUrl()}/api/projeto/list`, {
+            method: 'GET',
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        })
+
+        carrosselProjects = await fetch(`${await getBaseUrl()}/api/projeto/carrossel`, {
             method: 'GET',
             headers: {
                 'Authorization': `Bearer ${token}`
@@ -36,9 +38,14 @@ const page = async (props: Props) => {
         forYouProjects = await fetch(`${await getBaseUrl()}/api/projeto/list`, {
             method: 'GET'
         })
+
+        carrosselProjects = await fetch(`${await getBaseUrl()}/api/projeto/carrossel`, {
+            method: 'GET'
+        })
     }
 
     const projects: Projeto[] = await forYouProjects.json();
+    const projetos: ProjetoCarrossel[] = await carrosselProjects.json();
 
     let projetosGeral: Projeto[] = projects.sort((projeto1, projeto2) => {
         if (projeto1.upvotes < projeto2.upvotes) return 1;
@@ -72,7 +79,7 @@ const page = async (props: Props) => {
     return (<>
         <Header />
 
-        <ProjectsCarousel label='Projetos que mais subiram essa semana' projetos={projetos} />
+        <ProjectsCarousel label='Projetos mais engajados no MeNota' projetos={projetos} />
 
         <Label className='mb-4 text-3xl'>Feed</Label>
         <div className='w-full'>
