@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useEffect, useState } from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
 import { Card, CardContent, CardFooter, CardHeader } from './ui/card'
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar'
 import { Label } from './ui/label'
@@ -46,6 +46,7 @@ const ProjectCard = (props: Props) => {
     const [editDataEntrega, setEditDataEntrega] = useState<Date | undefined>(
     props.projeto.dataPrevistaEntrega ? new Date(props.projeto.dataPrevistaEntrega) : undefined
     );
+    const [imageBase64, setImageBase64] = useState('');
     const [projetoAtual, setProjetoAtual] = useState(props.projeto);
     const [entregavelDialogOpen, setEntregavelDialogOpen] = useState(false);
     const [entregavelNome, setEntregavelNome] = useState('');
@@ -74,7 +75,8 @@ const ProjectCard = (props: Props) => {
           nome: editNome,
           descricao: editDescricao,
           dataPrevistaInicio: editDataInicio?.toISOString().split('T')[0],
-          dataPrevistaEntrega: editDataEntrega?.toISOString().split('T')[0]
+          dataPrevistaEntrega: editDataEntrega?.toISOString().split('T')[0],
+          imageBase64: imageBase64
         };
       
         const response = await fetch(`${await getBaseUrl()}/api/projeto/update/${props.projeto.id}`, {
@@ -251,6 +253,27 @@ const ProjectCard = (props: Props) => {
 
     if (deletado) return <></>; 
 
+            const handleImageUpload = useCallback((files: FileList | null) => {
+                if (!files || files.length === 0) return
+        
+                const file = files[0]
+                const reader = new FileReader()
+        
+                reader.onload = (event) => {
+                    if (event.target?.result) {
+                        const base64 = event.target.result.toString()
+                        setImageBase64(base64)
+                    }
+                }
+        
+                reader.onerror = (error) => {
+                    console.error("Erro ao ler a imagem:", error)
+                    setImageBase64("")
+                }
+        
+                reader.readAsDataURL(file)
+            }, [])
+
     return (
     <>
         <div>
@@ -335,32 +358,42 @@ const ProjectCard = (props: Props) => {
                             </DialogHeader>
 
                             <div className="grid gap-4 py-4">
-                            <div className="grid gap-2">
-                                <Label htmlFor="nome">Nome</Label>
-                                <Input
-                                id="nome"
-                                value={editNome}
-                                onChange={(e) => setEditNome(e.target.value)}
-                                className="border rounded-2xl p-2"
-                                />
-                            </div>
-                            <div className="grid gap-2">
-                                <Label htmlFor="descricao">Descrição</Label>
-                                <Textarea
-                                id="descricao"
-                                value={editDescricao}
-                                onChange={(e) => setEditDescricao(e.target.value)}
-                                className="border rounded-2xl p-2"
-                                />
-                            </div>
-                            <div className="grid gap-2">
-                                <Label>Data de Início</Label>
-                                <DatePicker label='Data de Início' setDate={(date?: Date) => setEditDataInicio(date)}/>
-                            </div>
-                            <div className="grid gap-2">
-                                <Label>Data de Entrega</Label>
-                                <DatePicker label='Data de Entrega' setDate={(date?: Date) => setEditDataEntrega(date)}/>
-                            </div>
+                              <div className="grid gap-2">
+                                  <Label htmlFor="nome">Nome</Label>
+                                  <Input
+                                  id="nome"
+                                  value={editNome}
+                                  onChange={(e) => setEditNome(e.target.value)}
+                                  className="border rounded-2xl p-2"
+                                  />
+                              </div>
+                              <div className="grid gap-2">
+                                  <Label htmlFor="descricao">Descrição</Label>
+                                  <Textarea
+                                  id="descricao"
+                                  value={editDescricao}
+                                  onChange={(e) => setEditDescricao(e.target.value)}
+                                  className="border rounded-2xl p-2"
+                                  />
+                              </div>
+                              <div className="grid gap-2">
+                                  <Label>Data de Início</Label>
+                                  <DatePicker label='Data de Início' setDate={(date?: Date) => setEditDataInicio(date)}/>
+                              </div>
+                              <div className="grid gap-2">
+                                  <Label>Data de Entrega</Label>
+                                  <DatePicker label='Data de Entrega' setDate={(date?: Date) => setEditDataEntrega(date)}/>
+                              </div>
+                              <div className='grid gap-2'>
+                                  <Label>Escolha uma imagem de capa.</Label>
+                                  <Input
+                                      type="file"
+                                      accept="image/*"
+                                      onChange={(e) => handleImageUpload(e.target.files)}
+                                      className="rounded-2xl cursor-pointer"
+                                  />
+                                  <img src={imageBase64} alt='' className='max-w-[150px] max-h-[150px]'/>
+                              </div>
                             </div>
 
                             <DialogFooter>
@@ -490,7 +523,7 @@ const ProjectCard = (props: Props) => {
                             <ArrowUpFromLine /> {totalLikes}
                         </Button>
                     ) : (
-                        <Button disabled={!props.token} variant='secondary' className='rounded-2xl-[15px]' onClick={sendUpvote}>
+                        <Button disabled={!props.token} variant='secondary' className='rounded-2xl' onClick={sendUpvote}>
                             <ArrowUpFromLine /> {totalLikes}
                         </Button>
                     )}
