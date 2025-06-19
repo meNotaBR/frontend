@@ -7,10 +7,12 @@ import { ArrowRight, ArrowUpFromLine } from 'lucide-react'
 import Image from 'next/image'
 import { isMobile } from '@/hooks/user-agent'
 import { headers } from 'next/headers'
+import ProjetoCarrossel from '@/app/types/projeto-carrossel'
+import Link from 'next/link'
 
 type Props = {
     label: string,
-    projetos: any[],
+    projetos: ProjetoCarrossel[],
 }
 
 const ProjectsCarousel = async (props: Props) => {
@@ -35,14 +37,14 @@ const ProjectsCarousel = async (props: Props) => {
                                         />
                                         <div className="absolute top-3 right-3 bg-background/80 backdrop-blur-sm px-3 py-1 rounded-full text-sm font-medium flex items-center gap-1">
                                             <ArrowUpFromLine className="h-4 w-4 text-primary fill-primary" />
-                                            {'1000'}
+                                            {element.totalUpvote}
                                         </div>
                                     </div>
                                     <CardContent className="p-6">
                                         <h3 className="text-xl font-bold mb-2">{element.nome}</h3>
                                         <p className="text-muted-foreground mb-4">{element.descricao}</p>
                                         <Button variant="ghost" size="sm" className="group/btn">
-                                            Saiba mais
+                                            <Link href={`/projeto/${element.id}`} >Saiba mais</Link>
                                             <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover/btn:translate-x-1" />
                                         </Button>
                                     </CardContent>
