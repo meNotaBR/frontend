@@ -6,7 +6,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { Plus } from 'lucide-react';
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useCallback } from 'react'
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import DatePicker from '@/components/DatePicker';
@@ -28,6 +28,7 @@ const Page = (props: Props) => {
     const [projects, setProjects] = useState<Projeto[]>([]);
     const [token, setToken] = useState<string>('');
     const [isOpen, setIsOpen] = useState(false);
+    const [imageBase64, setImageBase64] = useState('');
 
     const fetchToken = async () => {
         const token = await getCookie('token');
@@ -75,7 +76,8 @@ const Page = (props: Props) => {
             nome: nome,
             dataPrevistaInicio: dateInicio ? format(dateInicio.toDateString(), "yyyy-MM-dd") : '',
             dataPrevistaEntrega: dateEntrega ? format(dateEntrega.toString(), "yyyy-MM-dd") : '',
-            descricao: descricao
+            descricao: descricao,
+            imageBase64: imageBase64
         }
 
         const response = await fetch(`${await getBaseUrl()}/api/projeto/create`, {
@@ -141,6 +143,27 @@ const Page = (props: Props) => {
         }
     }
 
+        const handleImageUpload = useCallback((files: FileList | null) => {
+            if (!files || files.length === 0) return
+    
+            const file = files[0]
+            const reader = new FileReader()
+    
+            reader.onload = (event) => {
+                if (event.target?.result) {
+                    const base64 = event.target.result.toString()
+                    setImageBase64(base64)
+                }
+            }
+    
+            reader.onerror = (error) => {
+                console.error("Erro ao ler a imagem:", error)
+                setImageBase64("")
+            }
+    
+            reader.readAsDataURL(file)
+        }, [])
+
     return (<>
         <Header />
 
@@ -192,6 +215,16 @@ const Page = (props: Props) => {
                             <div className="grid gap-2">
                                 <Label htmlFor="descricao">Fale sobre o projeto</Label>
                                 <Textarea id="descricao" placeholder='Adicione uma descrição' onChange={onChangeDescricao} />
+                            </div>
+                            <div className='grid gap-2'>
+                                <Label>Escolha uma imagem de capa.</Label>
+                                <Input
+                                    type="file"
+                                    accept="image/*"
+                                    onChange={(e) => handleImageUpload(e.target.files)}
+                                    className="rounded-2xl cursor-pointer"
+                                />
+                                <img src={imageBase64} alt='' className='max-w-[150px] max-h-[150px]'/>
                             </div>
 
                         </div>
