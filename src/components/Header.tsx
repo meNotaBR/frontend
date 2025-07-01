@@ -276,7 +276,7 @@ const Header = (props: Props) => {
                     </SheetContent>
                 </Sheet>
 
-                <Link href='/feed'><img src="menota.svg" alt="" className='w-[150px] not-dark:invert not-dark:brightness-200' /></Link>
+                <Link href='/feed'></Link>
             </div>
 
             <div className="flex items-center gap-2">
