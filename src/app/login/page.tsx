@@ -15,7 +15,7 @@ const page = (props: Props) => {
     const handlelogin = async (formData: FormData) => {
 
         toast.promise(login(formData), {
-            loading: 'Efeutando seu login...',
+            loading: 'Efetuando seu login...',
             success: () => {
                 router.push('/feed');
 
