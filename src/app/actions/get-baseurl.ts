@@ -1,5 +1,5 @@
 'use server'
 
 export default async function getBaseUrl(){
-    return process.env.BASE_URL;
+    return "https://backend-3v64l.ondigitalocean.app/";
 }
