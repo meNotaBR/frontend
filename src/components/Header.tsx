@@ -255,9 +255,6 @@ const Header = (props: Props) => {
                         </Button>
 
                         {!agent ? (<div className='grid grid-cols-1 gap-4'>
-                            <Button variant={'outline'} asChild>
-                                <Link href='/search' className='flex justify-between gap-2'><Search className='mt-[2px]' />Pesquisar Projetos</Link>
-                            </Button>
                             <Button variant='outline' asChild>
                                 <Link href='/liked' className='flex justify-between gap-2'><Star className='mt-[2px]' /> Projetos que você curtiu</Link>
                             </Button>
