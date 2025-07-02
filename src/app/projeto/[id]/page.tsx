@@ -166,7 +166,7 @@ const formatarData = (data: string | Date): string => {
         <CardFooter className="shrink-0 pt-2">
           <div className="flex w-full items-start gap-2 text-sm">
             <div className="grid gap-2">
-              {view?.upvotes.length && view?.upvotes.length > 5 ? (
+              {view?.upvotes.length && view?.upvotes.length >= 5 ? (
               <div className="flex items-center gap-2 font-medium leading-none">
                 Um crescimento de {view?.taxaCrescimentoUpvotes}% <TrendingUp className="h-4 w-4" />
               </div>
