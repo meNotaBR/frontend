@@ -41,7 +41,7 @@ export default function Home() {
       >
         <div className="flex items-center gap-2">
           <TrendingUp className="h-6 w-6 text-primary" />
-          <Link href='/feed'>
+          <Link href='/login'>
             <img src="/menota.svg" alt="meNota Logo" className='w-[150px] not-dark:invert not-dark:brightness-200' />
           </Link>
         </div>
@@ -88,7 +88,7 @@ export default function Home() {
           </p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
             <Button asChild size="lg" className="rounded-full px-8">
-              <Link href={`/feed`}>Acesse já</Link>
+              <Link href={`/login`}>Acesse já</Link>
             </Button>
           </div>
         </motion.div>
